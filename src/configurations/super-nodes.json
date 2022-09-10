@@ -9,6 +9,16 @@
             "name": "super-node-2",
             "address": "127.0.0.1",
             "port": 8001
+        },
+        {
+            "name": "super-node-3",
+            "address": "127.0.0.1",
+            "port": 8002
+        },
+        {
+            "name": "super-node-4",
+            "address": "127.0.0.1",
+            "port": 8003
         }
     ]
 }
