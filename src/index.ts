@@ -22,9 +22,13 @@ for (const node of peerNodesConfiguration.nodes) {
 const operationMode = process.argv[2];
 const nodeName = process.argv[3];
 
+let isContainer = false;
+if (process.env.IS_CONTAINER) {
+  isContainer = true;
+}
+
 let address = "";
 let port = 0;
-
 const configurationToLook =
   operationMode.toLowerCase() === "supernode"
     ? superNodesConfiguration
@@ -42,6 +46,13 @@ if (!address || !port) {
   throw new Error("The node is not configured.");
 }
 
-console.log(`[\u001b[32m${operationMode}\u001b[0m] Starting ${nodeName}...`);
+const GREEN = "\u001b[32m";
+const RESET = "\u001b[0m";
+
+console.log(
+  `[${GREEN}${operationMode.toUpperCase()}${RESET}] [${GREEN}${
+    isContainer ? "CONTAINER" : "HOST MACHINE"
+  }${RESET}] Starting ${nodeName}...`
+);
 console.log("Node configuration: ", { nodeName, address, port });
 console.log();
