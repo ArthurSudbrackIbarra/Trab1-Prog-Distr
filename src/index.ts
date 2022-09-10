@@ -1,18 +1,17 @@
-import superNodesConfig from "./configurations/super-nodes.json";
-import p2pNodesConfig from "./configurations/p2p-nodes.json";
+import superNodesConfiguration from "./configurations/super-nodes.json";
+import peerNodesConfiguration from "./configurations/peer-nodes.json";
 
+import System from "./System";
 import SuperNode from "./SuperNode";
-import P2PNode from "./P2PNode";
+import PeerNode from "./PeerNode";
 
-const superNodes: SuperNode[] = [];
-const p2pNodes: P2PNode[] = [];
+const system = new System();
 
-for (const node of superNodesConfig.nodes) {
-  superNodes.push(new SuperNode(node.name, node.address, node.port));
+for (const node of superNodesConfiguration.nodes) {
+  system.addSuperNode(new SuperNode(node.name, node.address, node.port));
 }
-for (const node of p2pNodesConfig.nodes) {
-  p2pNodes.push(new P2PNode(node.name, node.address, node.port));
+for (const node of peerNodesConfiguration.nodes) {
+  system.addPeerNode(new PeerNode(node.name, node.address, node.port));
 }
 
-console.log(superNodes);
-console.log(p2pNodes);
+console.log(system);

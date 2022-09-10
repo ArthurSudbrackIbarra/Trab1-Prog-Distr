@@ -1,12 +1,12 @@
 {
     "nodes": [
         {
-            "name": "p2p-node-1",
+            "name": "peer-node-1",
             "address": "127.0.0.1",
             "port": 9000
         },
         {
-            "name": "p2p-node-2",
+            "name": "peer-node-2",
             "address": "127.0.0.1",
             "port": 9001
         }
