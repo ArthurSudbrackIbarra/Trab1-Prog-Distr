@@ -4,12 +4,12 @@ services:
     container_name: super-node-1
     environment:
       - OPERATION_MODE=supernode
-      - NAME=super-node-1
+      - NODE_NAME=super-node-1
     build: .
   super-node-2:
     container_name: super-node-2
     environment:
       - OPERATION_MODE=supernode
-      - NAME=super-node-2
+      - NODE_NAME=super-node-2
     build: .
     

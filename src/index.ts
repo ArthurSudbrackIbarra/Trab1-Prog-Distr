@@ -20,7 +20,7 @@ for (const node of peerNodesConfiguration.nodes) {
   Application node (The node for which the running application is responsible).
 */
 const operationMode = process.argv[2];
-const name = process.argv[3];
+const nodeName = process.argv[3];
 
 let address = "";
 let port = 0;
@@ -31,7 +31,7 @@ const configurationToLook =
     : peerNodesConfiguration;
 
 for (const node of configurationToLook.nodes) {
-  if (node.name === name) {
+  if (node.name === nodeName) {
     address = node.address;
     port = node.port;
     break;
@@ -42,6 +42,6 @@ if (!address || !port) {
   throw new Error("The node is not configured.");
 }
 
-console.log(`[${operationMode}] Starting ${name}...`);
-console.log("Node configuration: ", { name, address, port });
+console.log(`[${operationMode}] Starting ${nodeName}...`);
+console.log("Node configuration: ", { nodeName, address, port });
 console.log();
