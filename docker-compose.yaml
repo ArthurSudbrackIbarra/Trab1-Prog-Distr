@@ -12,4 +12,16 @@ services:
       - OPERATION_MODE=supernode
       - NODE_NAME=super-node-2
     build: .
+  super-node-3:
+    container_name: super-node-3
+    environment:
+      - OPERATION_MODE=supernode
+      - NODE_NAME=super-node-3
+    build: .
+  super-node-4:
+    container_name: super-node-4
+    environment:
+      - OPERATION_MODE=supernode
+      - NODE_NAME=super-node-4
+    build: .
     
