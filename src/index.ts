@@ -42,6 +42,6 @@ if (!address || !port) {
   throw new Error("The node is not configured.");
 }
 
-console.log(`[${operationMode}] Starting ${nodeName}...`);
+console.log(`[\u001b[32m${operationMode}\u001b[0m] Starting ${nodeName}...`);
 console.log("Node configuration: ", { nodeName, address, port });
 console.log();

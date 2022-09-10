@@ -5,23 +5,31 @@ services:
     environment:
       - OPERATION_MODE=supernode
       - NODE_NAME=super-node-1
+    ports:
+      - 8000:8000
     build: .
   super-node-2:
     container_name: super-node-2
     environment:
       - OPERATION_MODE=supernode
       - NODE_NAME=super-node-2
+    ports:
+      - 8001:8001
     build: .
   super-node-3:
     container_name: super-node-3
     environment:
       - OPERATION_MODE=supernode
       - NODE_NAME=super-node-3
+    ports:
+      - 8002:8002
     build: .
   super-node-4:
     container_name: super-node-4
     environment:
       - OPERATION_MODE=supernode
       - NODE_NAME=super-node-4
+    ports:
+      - 8003:8003
     build: .
     
