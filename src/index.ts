@@ -9,8 +9,12 @@ import PeerNode from "./PeerNode";
   System (Information about the whole system).
 */
 const system = new System();
-for (const node of superNodesConfiguration.nodes) {
-  system.addSuperNode(new SuperNode(node.name, node.address, node.port));
+for (let i = 0; i < superNodesConfiguration.nodes.length; i++) {
+  const node = superNodesConfiguration.nodes[i];
+  const order = i + 1;
+  system.addSuperNode(
+    new SuperNode(node.name, node.address, node.port, order, system)
+  );
 }
 for (const node of peerNodesConfiguration.nodes) {
   system.addPeerNode(new PeerNode(node.name, node.address, node.port));
@@ -48,7 +52,11 @@ const RESET = "\u001b[0m";
 console.log(
   `[${GREEN}${operationMode.toUpperCase()}${RESET}] [${GREEN}${
     applicationNode.getIsRunningInContainer() ? "CONTAINER" : "HOST MACHINE"
-  }${RESET}] Starting ${nodeName}...`
+  }${RESET}]`
 );
-console.log("Node configuration: ", applicationNode);
-console.log();
+console.log(applicationNode.toString(), "\n");
+
+/*
+  Starting the application node.
+*/
+applicationNode.start();

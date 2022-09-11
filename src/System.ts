@@ -13,8 +13,8 @@ export default class System {
   public addSuperNode(superNode: SuperNode) {
     this.superNodes.push(superNode);
   }
-  public addPeerNode(p2pNode: PeerNode) {
-    this.peerNodes.push(p2pNode);
+  public addPeerNode(peerNode: PeerNode) {
+    this.peerNodes.push(peerNode);
   }
 
   public getSuperNode(name: string): SuperNode | undefined {
@@ -22,5 +22,11 @@ export default class System {
   }
   public getPeerNode(name: string): PeerNode | undefined {
     return this.peerNodes.find((peerNode) => peerNode.getName() === name);
+  }
+  public getNextSuperNode(order: number): SuperNode | undefined {
+    const nextOrder = (order + 1) % this.superNodes.length;
+    return this.superNodes.find(
+      (superNode) => superNode.getOrder() === nextOrder
+    );
   }
 }

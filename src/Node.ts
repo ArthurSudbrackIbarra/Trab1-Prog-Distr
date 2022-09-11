@@ -23,8 +23,10 @@ export default abstract class Node {
   public getIsRunningInContainer(): boolean {
     return this.isRunningInContainer;
   }
-
   public setIsRunningInContainer(isRunningInContainer: boolean) {
     this.isRunningInContainer = isRunningInContainer;
   }
+
+  public abstract toString(): string;
+  public abstract start(): void;
 }
