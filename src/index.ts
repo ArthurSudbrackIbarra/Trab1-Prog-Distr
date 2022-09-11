@@ -1,6 +1,6 @@
 import superNodesConfiguration from "./configurations/super-nodes.json";
-import peerNodesConfiguration from "./configurations/peer-nodes.json";
 
+import Node from "./Node";
 import System from "./System";
 import SuperNode from "./SuperNode";
 import PeerNode from "./PeerNode";
@@ -16,9 +16,6 @@ for (let i = 0; i < superNodesConfiguration.nodes.length; i++) {
     new SuperNode(node.name, node.address, node.port, order, system)
   );
 }
-for (const node of peerNodesConfiguration.nodes) {
-  system.addPeerNode(new PeerNode(node.name, node.address, node.port));
-}
 
 /*
   Application node (The node for which the running application is responsible).
@@ -27,18 +24,47 @@ const operationMode = process.argv[2];
 const nodeName = process.argv[3];
 if (!operationMode || !nodeName) {
   console.log(
-    "Usage: npx tsc && node build/index.js <operation-mode> <node-name>"
+    "Usage: npx tsc && node build/index.js <operation-mode> <node-name> ..."
   );
   process.exit(1);
 }
 
-const applicationNode =
-  operationMode.toLowerCase() === "super-node"
-    ? system.getSuperNode(nodeName)
-    : system.getPeerNode(nodeName);
+let applicationNode: Node | undefined = undefined;
+if (operationMode.toLowerCase() === "super-node") {
+  /*
+    Super node.
+  */
+  applicationNode = system.getSuperNode(nodeName);
+} else if (operationMode.toLowerCase() === "peer-node") {
+  /*
+    Peer node.
+  */
+  const port = parseInt(process.argv[4]);
+  const resourceDirectory = process.argv[5];
+  if (!port || !resourceDirectory) {
+    console.log(
+      "Usage: npx tsc && node build/index.js peer-node <node-name> <port> <resources-directory>"
+    );
+    process.exit(1);
+  }
+  applicationNode = new PeerNode(
+    nodeName,
+    "127.0.0.1",
+    port,
+    resourceDirectory
+  );
+} else {
+  /*
+    Invalid operation mode.
+  */
+  console.log("[Error] Invalid operation mode.");
+  process.exit(1);
+}
 
 if (!applicationNode) {
-  console.error(`[Error] Invalid super node name: ${nodeName}.`);
+  console.error(
+    `[Error] Super node '${nodeName}' is not defined in src/configurations/super-nodes.json.`
+  );
   process.exit(1);
 }
 

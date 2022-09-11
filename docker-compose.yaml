@@ -1,35 +1,46 @@
 version: "3.9"
 services:
+  # Super nodes.
   super-node-1:
     container_name: super-node-1
     environment:
-      - OPERATION_MODE=super-node
       - NODE_NAME=super-node-1
     ports:
       - 8000:8000
     build: .
+    entrypoint: npm run start-supernode-container
   super-node-2:
     container_name: super-node-2
     environment:
-      - OPERATION_MODE=super-node
       - NODE_NAME=super-node-2
     ports:
       - 8001:8001
     build: .
+    entrypoint: npm run start-supernode-container
   super-node-3:
     container_name: super-node-3
     environment:
-      - OPERATION_MODE=super-node
       - NODE_NAME=super-node-3
     ports:
       - 8002:8002
     build: .
+    entrypoint: npm run start-supernode-container
   super-node-4:
     container_name: super-node-4
     environment:
-      - OPERATION_MODE=super-node
       - NODE_NAME=super-node-4
     ports:
       - 8003:8003
     build: .
-    
+    entrypoint: npm run start-supernode-container
+  # Peer nodes.
+  peer-node-1:
+    container_name: peer-node-1
+    environment:
+      - NODE_NAME=peer-node-1
+      - PORT=9000
+      - RESOURCES_DIRECTORY=src/resources/books-1
+    ports:
+      - 9000:9000
+    build: .
+    entrypoint: npm run start-peer-container

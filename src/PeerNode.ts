@@ -1,13 +1,25 @@
 import Node from "./Node";
-import System from "./System";
 
 export default class PeerNode extends Node {
-  constructor(name: string, address: string, port: number) {
+  /*
+    Resources directory path.
+  */
+  private resourcesDirectory: string;
+
+  constructor(
+    name: string,
+    address: string,
+    port: number,
+    resourcesDirectory: string
+  ) {
     super(name, address, port);
+    this.resourcesDirectory = resourcesDirectory;
   }
 
   public toString(): string {
-    return `Peer Node - ${this.getName()} (${this.getAddress()}:${this.getPort()})`;
+    return `{\n\tPeer Node - ${this.getName()} (${this.getAddress()}:${this.getPort()})\n\tResources Directory: ${
+      this.resourcesDirectory
+    }\n}`;
   }
   public start(): void {
     /*
