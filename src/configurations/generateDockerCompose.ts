@@ -18,7 +18,7 @@ for (let i = 0; i < superNodesConfiguration.nodes.length; i++) {
   dockerComposeContent += "    environment:\n";
   dockerComposeContent += `      - NODE_NAME=${node.name}\n`;
   dockerComposeContent += "    ports:\n";
-  dockerComposeContent += `      - ${node.port}:${node.port}\n`;
+  dockerComposeContent += `      - ${node.port}:${node.port}/udp\n`;
   dockerComposeContent += "    build: .\n";
   dockerComposeContent += "    entrypoint: npm run super-node-container\n";
 }
@@ -33,7 +33,7 @@ for (let i = 0; i < peerNodesConfiguration.nodes.length; i++) {
   dockerComposeContent += `      - NODE_PORT=${node.port}\n`;
   dockerComposeContent += `      - RESOURCES_DIRECTORY=${node.resources_directory}\n`;
   dockerComposeContent += "    ports:\n";
-  dockerComposeContent += `      - ${node.port}:${node.port}\n`;
+  dockerComposeContent += `      - ${node.port}:${node.port}/udp\n`;
   dockerComposeContent += "    build: .\n";
   dockerComposeContent += "    entrypoint: npm run peer-node-container\n";
 }
