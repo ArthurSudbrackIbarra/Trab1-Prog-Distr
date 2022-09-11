@@ -2,6 +2,7 @@ import {
   KeepAliveMessage,
   Message,
   RegisterMessage,
+  RegisterResponseMessage,
 } from "./messages/messages";
 import Node from "./Node";
 import SuperNode from "./SuperNode";
@@ -39,22 +40,22 @@ export default class PeerNode extends Node {
     Entrypoint function.
   */
   public async start(): Promise<void> {
+    let superNode: SuperNode | null = null;
     while (true) {
       try {
-        const superNode = await this.registerToSuperNode();
-        this.superNode = superNode;
+        superNode = await this.sendRegistrationToSuperNode();
         break;
       } catch (error) {
         console.log(error);
         await wait(5000);
       }
     }
-    console.log(`Connected to super node ${this.superNode.getName()}.`);
+    console.log(`Trying to register to super node ${superNode.getName()}.`);
     this.startListening();
-    this.startKeepAliveMessages();
+    this.checkNoSuperNodeRoutine();
   }
 
-  private registerToSuperNode(): Promise<SuperNode> {
+  private sendRegistrationToSuperNode(): Promise<SuperNode> {
     return new Promise(async (resolve, reject) => {
       const superNode = System.getRandomSuperNode();
       if (!superNode) {
@@ -111,11 +112,50 @@ export default class PeerNode extends Node {
     });
   }
 
+  private tryAgainInterval: NodeJS.Timer | null = null;
+  private checkNoSuperNodeRoutine(): void {
+    if (this.tryAgainInterval) {
+      clearInterval(this.tryAgainInterval);
+    }
+    console.log("Not connected to any super node, restarting...");
+    this.tryAgainInterval = setInterval(() => {
+      if (this.superNode) {
+        return;
+      }
+      this.start();
+    }, 5000);
+  }
+
   private startListening(): void {
     this.getSocket().on("message", (message, remote) => {
       console.log(
         `Received message '${message}' from ${remote.address}:${remote.port}`
       );
+      const decodedMessage = JSON.parse(message.toString());
+      switch (decodedMessage.type) {
+        case "registerResponse":
+          {
+            const registerResponseMessage =
+              decodedMessage as RegisterResponseMessage;
+            if (registerResponseMessage.status === "success") {
+              console.log(
+                `Successfully registered to super node '${registerResponseMessage.name}'.`
+              );
+              this.superNode =
+                System.getSuperNodeByName(registerResponseMessage.name) || null;
+              this.startKeepAliveMessages();
+            } else {
+              console.error(
+                `Error registering to super node ${registerResponseMessage.name}.`
+              );
+              /*
+                Trying again.
+              */
+              this.start();
+            }
+          }
+          break;
+      }
     });
   }
 

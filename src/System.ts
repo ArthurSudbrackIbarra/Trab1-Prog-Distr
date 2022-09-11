@@ -8,7 +8,7 @@ export default class System {
     this.superNodes.push(superNode);
   }
 
-  public static getSuperNode(name: string): SuperNode | undefined {
+  public static getSuperNodeByName(name: string): SuperNode | undefined {
     return this.superNodes.find((superNode) => superNode.getName() === name);
   }
   public static getRandomSuperNode(): SuperNode | undefined {

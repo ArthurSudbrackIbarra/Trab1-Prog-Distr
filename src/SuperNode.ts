@@ -47,7 +47,7 @@ export default class SuperNode extends Node {
     return new Promise((resolve, reject) => {
       const jsonMessage = JSON.stringify(message);
       console.log(
-        `Sending message '${message}' to ${node.getAddress()}:${node.getPort()}`
+        `Sending message '${jsonMessage}' to ${node.getAddress()}:${node.getPort()}`
       );
       this.getSocket().send(
         Buffer.from(jsonMessage),
@@ -82,6 +82,7 @@ export default class SuperNode extends Node {
             );
             const registerResponseMessage: RegisterResponseMessage = {
               type: "registerResponse",
+              name: this.getName(),
               status: "success",
             };
             try {
@@ -118,12 +119,12 @@ export default class SuperNode extends Node {
   private checkDeadPeerNodesRoutine(): void {
     setInterval(() => {
       const currentTime = Date.now();
-      this.peerNodesData.forEach((peerNodeData, name) => {
+      this.peerNodesData.forEach((peerNodeData, nodeName) => {
         if (currentTime - peerNodeData.lastKeepAliveTime > 10000) {
           console.log(
-            `Peer node '${name}' has ${RED}disconnected${RESET} and will be removed.`
+            `Peer node '${nodeName}' has ${RED}disconnected${RESET} and will be removed.`
           );
-          this.peerNodesData.delete(name);
+          this.peerNodesData.delete(nodeName);
         }
       });
     }, 5000);

@@ -12,6 +12,7 @@ export interface RegisterMessage extends Message {
 
 export interface RegisterResponseMessage extends Message {
   type: "registerResponse";
+  name: string;
   status: "success" | "failure";
 }
 

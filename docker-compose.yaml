@@ -38,3 +38,23 @@ services:
       - 9001:9001/udp
     build: .
     entrypoint: npm run peer-node-container
+  peer-node-3:
+    container_name: peer-node-3
+    environment:
+      - NODE_NAME=peer-node-3
+      - NODE_PORT=9002
+      - RESOURCES_DIRECTORY=src/resources/books-3
+    ports:
+      - 9002:9002/udp
+    build: .
+    entrypoint: npm run peer-node-container
+  peer-node-4:
+    container_name: peer-node-4
+    environment:
+      - NODE_NAME=peer-node-4
+      - NODE_PORT=9003
+      - RESOURCES_DIRECTORY=src/resources/books-4
+    ports:
+      - 9003:9003/udp
+    build: .
+    entrypoint: npm run peer-node-container

@@ -32,7 +32,7 @@ if (operationMode.toLowerCase() === "super-node") {
   /*
     Super node.
   */
-  applicationNode = System.getSuperNode(nodeName);
+  applicationNode = System.getSuperNodeByName(nodeName);
 } else if (operationMode.toLowerCase() === "peer-node") {
   /*
     Peer node.

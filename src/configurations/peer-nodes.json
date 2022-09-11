@@ -9,6 +9,16 @@
             "name": "peer-node-2",
             "port": 9001,
             "resources_directory": "src/resources/books-2"
+        },
+        {
+            "name": "peer-node-3",
+            "port": 9002,
+            "resources_directory": "src/resources/books-3"
+        },
+        {
+            "name": "peer-node-4",
+            "port": 9003,
+            "resources_directory": "src/resources/books-4"
         }
     ]
 }
