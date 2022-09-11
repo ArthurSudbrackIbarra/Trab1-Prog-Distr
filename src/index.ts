@@ -51,7 +51,6 @@ if (operationMode.toLowerCase() === "super-node") {
     port,
     resourceDirectory
   );
-  System.addPeerNode(applicationNode as PeerNode);
 } else {
   /*
     Invalid operation mode.

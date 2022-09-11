@@ -1,3 +1,8 @@
+import {
+  KeepAliveMessage,
+  Message,
+  RegisterMessage,
+} from "./messages/messages";
 import Node from "./Node";
 import SuperNode from "./SuperNode";
 import System from "./System";
@@ -46,12 +51,7 @@ export default class PeerNode extends Node {
     }
     console.log(`Connected to super node ${this.superNode.getName()}.`);
     this.startListening();
-
-    // Remove later.
-    while (true) {
-      this.sendMessageToSuperNode("Hello", this.superNode);
-      await wait(5000);
-    }
+    this.startKeepAliveMessages();
   }
 
   private registerToSuperNode(): Promise<SuperNode> {
@@ -62,7 +62,13 @@ export default class PeerNode extends Node {
         return;
       }
       try {
-        await this.sendMessageToSuperNode("Register", superNode);
+        const message: RegisterMessage = {
+          type: "register",
+          name: this.getName(),
+          port: this.getPort(),
+          content: "???",
+        };
+        await this.sendMessageToSuperNode(message, superNode);
         resolve(superNode);
       } catch (error) {
         reject(error);
@@ -71,7 +77,7 @@ export default class PeerNode extends Node {
   }
 
   private sendMessageToSuperNode(
-    message: string,
+    message: Message,
     superNode: SuperNode | null
   ): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -80,21 +86,18 @@ export default class PeerNode extends Node {
         return;
       }
       let address = superNode.getAddress();
-
       if (
         (address === "localhost" || address === "127.0.0.1") &&
         this.getIsRunningInContainer()
       ) {
         address = "host.docker.internal";
       }
-
-      // Remove later.
+      const jsonMessage = JSON.stringify(message);
       console.log(
-        `Sending message '${message}' to ${address}:${superNode.getPort()}`
+        `Sending message '${jsonMessage}' to ${address}:${superNode.getPort()}`
       );
-
       this.getSocket().send(
-        Buffer.from(message),
+        Buffer.from(jsonMessage),
         superNode.getPort(),
         address,
         (error) => {
@@ -114,5 +117,24 @@ export default class PeerNode extends Node {
         `Received message '${message}' from ${remote.address}:${remote.port}`
       );
     });
+  }
+
+  private startKeepAliveMessages(): void {
+    setInterval(async () => {
+      if (!this.superNode) {
+        return;
+      }
+      const keepAliveMessage: KeepAliveMessage = {
+        type: "keepAlive",
+        name: this.getName(),
+      };
+      try {
+        await this.sendMessageToSuperNode(keepAliveMessage, this.superNode);
+      } catch (error) {
+        console.error(
+          `Error sending keep alive message to super node ${this.superNode.getName()}.`
+        );
+      }
+    }, 5000);
   }
 }
