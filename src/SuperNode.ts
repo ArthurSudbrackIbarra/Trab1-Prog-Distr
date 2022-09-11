@@ -24,7 +24,7 @@ export default class SuperNode extends Node {
   }
 
   public toString(): string {
-    return `{Super Node - ${this.getName()} (${this.getAddress()}:${this.getPort()})\n\tOrder: ${
+    return `{\n\tSuper Node - ${this.getName()} (${this.getAddress()}:${this.getPort()})\n\tOrder: ${
       this.order
     }\n}`;
   }
