@@ -117,11 +117,11 @@ export default class PeerNode extends Node {
     if (this.tryAgainInterval) {
       clearInterval(this.tryAgainInterval);
     }
-    console.log("Not connected to any super node, restarting...");
     this.tryAgainInterval = setInterval(() => {
       if (this.superNode) {
         return;
       }
+      console.log("Not connected to any super node, restarting...");
       this.start();
     }, 10000);
   }
