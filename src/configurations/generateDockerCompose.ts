@@ -1,4 +1,5 @@
 import fs from "fs";
+import { BLUE, RESET } from "../utils/colors";
 import superNodesConfiguration from "./super-nodes.json";
 
 let dockerComposeContent = "";
@@ -20,7 +21,7 @@ for (let i = 0; i < superNodesConfiguration.nodes.length; i++) {
 
 try {
   fs.writeFileSync("docker-compose.yaml", dockerComposeContent);
-  console.log("docker-compose.yaml generated.\n");
+  console.log(`[${BLUE}INFO${RESET}] docker-compose.yaml generated.\n`);
 } catch (error) {
   console.error(`Unnable to write docker-compose.yml file: ${error}`);
 }

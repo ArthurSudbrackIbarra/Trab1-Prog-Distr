@@ -4,11 +4,11 @@
   "description": "Trabalho 1 de Programação Distribuída.",
   "main": "build/index.js",
   "scripts": {
-    "generate-docker-compose": "npx tsc && node build/configurations/generateDockerCompose.js",
     "start-supernode-host": "npx tsc && node build/index.js super-node super-node-1",
     "start-peer-host": "npx tsc && node build/index.js peer-node peer-node-1 9000 src/resources/books-1",
-    "start-supernode-container": "npx tsc && node build/index.js super-node $NODE_NAME",
-    "start-peer-container": "npx tsc && node build/index.js peer-node $NODE_NAME $PORT $RESOURCES_DIRECTORY",
+    "generate-docker-compose": "npx tsc && node build/configurations/generateDockerCompose.js",
+    "start-supernode-container": "npm run generate-docker-compose && node build/index.js super-node $NODE_NAME",
+    "start-peer-container": "npm run generate-docker-compose && node build/index.js peer-node $NODE_NAME $PORT $RESOURCES_DIRECTORY",
     "start-docker": "docker compose up --build"
   },
   "author": "Arthur Sudbrack Ibarra, Luiz Eduardo Mello dos Reis, Willian Magnum Albeche",

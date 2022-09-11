@@ -4,6 +4,7 @@ import Node from "./Node";
 import System from "./System";
 import SuperNode from "./SuperNode";
 import PeerNode from "./PeerNode";
+import { GREEN, RED, RESET } from "./utils/colors";
 
 /*
   System (Information about the whole system).
@@ -58,13 +59,13 @@ if (operationMode.toLowerCase() === "super-node") {
   /*
     Invalid operation mode.
   */
-  console.log("[Error] Invalid operation mode.");
+  console.log(`[${RED}Error${RESET}] Invalid operation mode.`);
   process.exit(1);
 }
 
 if (!applicationNode) {
   console.error(
-    `[Error] Super node '${nodeName}' is not defined in src/configurations/super-nodes.json.`
+    `[${RED}Error${RESET}] Super node '${nodeName}' is not defined in src/configurations/super-nodes.json.`
   );
   process.exit(1);
 }
@@ -72,9 +73,6 @@ if (!applicationNode) {
 if (process.env.IS_CONTAINER) {
   applicationNode.setIsRunningInContainer(true);
 }
-
-const GREEN = "\u001b[32m";
-const RESET = "\u001b[0m";
 
 console.log(
   `[${GREEN}${operationMode.toUpperCase()}${RESET}] [${GREEN}${
