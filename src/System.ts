@@ -2,28 +2,26 @@ import PeerNode from "./PeerNode";
 import SuperNode from "./SuperNode";
 
 export default class System {
-  private superNodes: SuperNode[];
-  private peerNodes: PeerNode[];
+  private static superNodes: SuperNode[] = [];
+  private static peerNodes: PeerNode[] = [];
 
-  constructor() {
-    this.superNodes = [];
-    this.peerNodes = [];
-  }
-
-  public addSuperNode(superNode: SuperNode) {
+  public static addSuperNode(superNode: SuperNode) {
     this.superNodes.push(superNode);
   }
-  public addPeerNode(peerNode: PeerNode) {
+  public static addPeerNode(peerNode: PeerNode) {
     this.peerNodes.push(peerNode);
   }
 
-  public getSuperNode(name: string): SuperNode | undefined {
+  public static getSuperNode(name: string): SuperNode | undefined {
     return this.superNodes.find((superNode) => superNode.getName() === name);
   }
-  public getPeerNode(name: string): PeerNode | undefined {
+  public static getRandomSuperNode(): SuperNode | undefined {
+    return this.superNodes[Math.floor(Math.random() * this.superNodes.length)];
+  }
+  public static getPeerNode(name: string): PeerNode | undefined {
     return this.peerNodes.find((peerNode) => peerNode.getName() === name);
   }
-  public getNextSuperNode(order: number): SuperNode | undefined {
+  public static getNextSuperNode(order: number): SuperNode | undefined {
     const nextOrder = (order + 1) % this.superNodes.length;
     return this.superNodes.find(
       (superNode) => superNode.getOrder() === nextOrder

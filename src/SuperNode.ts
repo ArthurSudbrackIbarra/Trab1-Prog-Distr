@@ -1,5 +1,5 @@
 import Node from "./Node";
-import System from "./System";
+import PeerNode from "./PeerNode";
 
 export default class SuperNode extends Node {
   /*
@@ -7,20 +7,14 @@ export default class SuperNode extends Node {
   */
   private order: number;
   /*
-    System object - Information about the whole system (super nodes, peer nodes...).
+    The list of peer nodes connected to this super node.
   */
-  private system: System;
+  private peerNodes: PeerNode[];
 
-  constructor(
-    name: string,
-    address: string,
-    port: number,
-    order: number,
-    system: System
-  ) {
+  constructor(name: string, address: string, port: number, order: number) {
     super(name, address, port);
     this.order = order;
-    this.system = system;
+    this.peerNodes = [];
   }
 
   public toString(): string {
@@ -28,7 +22,7 @@ export default class SuperNode extends Node {
       this.order
     }\n}`;
   }
-  public start(): void {
+  public async start(): Promise<void> {
     /*
       Method to start the super node.
     */

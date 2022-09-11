@@ -9,13 +9,10 @@ import { GREEN, RED, RESET } from "./utils/colors";
 /*
   System (Information about the whole system).
 */
-const system = new System();
 for (let i = 0; i < superNodesConfiguration.nodes.length; i++) {
   const node = superNodesConfiguration.nodes[i];
   const order = i + 1;
-  system.addSuperNode(
-    new SuperNode(node.name, node.address, node.port, order, system)
-  );
+  System.addSuperNode(new SuperNode(node.name, node.address, node.port, order));
 }
 
 /*
@@ -35,7 +32,7 @@ if (operationMode.toLowerCase() === "super-node") {
   /*
     Super node.
   */
-  applicationNode = system.getSuperNode(nodeName);
+  applicationNode = System.getSuperNode(nodeName);
 } else if (operationMode.toLowerCase() === "peer-node") {
   /*
     Peer node.
@@ -54,7 +51,7 @@ if (operationMode.toLowerCase() === "super-node") {
     port,
     resourceDirectory
   );
-  system.addPeerNode(applicationNode as PeerNode);
+  System.addPeerNode(applicationNode as PeerNode);
 } else {
   /*
     Invalid operation mode.

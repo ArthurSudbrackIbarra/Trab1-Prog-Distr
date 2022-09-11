@@ -1,14 +1,22 @@
+import dgram from "dgram";
+
 export default abstract class Node {
   private name: string;
   private address: string;
   private port: number;
   private isRunningInContainer: boolean;
+  private socket: dgram.Socket;
 
   constructor(name: string, address: string, port: number) {
     this.name = name;
     this.address = address;
     this.port = port;
     this.isRunningInContainer = false;
+    this.socket = dgram.createSocket("udp4");
+    this.socket.bind(
+      this.port,
+      this.isRunningInContainer ? "docker.host.internal" : this.address
+    );
   }
 
   public getName(): string {
@@ -26,7 +34,10 @@ export default abstract class Node {
   public setIsRunningInContainer(isRunningInContainer: boolean) {
     this.isRunningInContainer = isRunningInContainer;
   }
+  public getSocket(): dgram.Socket {
+    return this.socket;
+  }
 
   public abstract toString(): string;
-  public abstract start(): void;
+  public abstract start(): Promise<void>;
 }
