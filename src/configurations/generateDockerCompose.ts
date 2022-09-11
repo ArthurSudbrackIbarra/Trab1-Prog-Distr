@@ -9,6 +9,9 @@ dockerComposeContent += "  # Super nodes.\n";
 
 for (let i = 0; i < superNodesConfiguration.nodes.length; i++) {
   const node = superNodesConfiguration.nodes[i];
+  if (!["127.0.0.1", "localhost"].includes(node.address.toLowerCase())) {
+    continue;
+  }
   dockerComposeContent += `  ${node.name}:\n`;
   dockerComposeContent += `    container_name: ${node.name}\n`;
   dockerComposeContent += "    environment:\n";
