@@ -4,7 +4,7 @@
   "description": "Trabalho 1 de Programação Distribuída.",
   "main": "build/index.js",
   "scripts": {
-    "start": "npx tsc && node build/index.js supernode super-node-1",
+    "start": "npx tsc && node build/index.js super-node super-node-1",
     "start-inside-container": "npx tsc && node build/index.js $OPERATION_MODE $NODE_NAME"
   },
   "author": "Arthur Sudbrack Ibarra, Luiz Eduardo Mello dos Reis, Willian Magnum Albeche",

@@ -21,29 +21,25 @@ for (const node of peerNodesConfiguration.nodes) {
 */
 const operationMode = process.argv[2];
 const nodeName = process.argv[3];
+if (!operationMode || !nodeName) {
+  console.log(
+    "Usage: npx tsc && node build/index.js <operation-mode> <node-name>"
+  );
+  process.exit(1);
+}
 
-let isContainer = false;
+const applicationNode =
+  operationMode.toLowerCase() === "super-node"
+    ? system.getSuperNode(nodeName)
+    : system.getPeerNode(nodeName);
+
+if (!applicationNode) {
+  console.error(`[Error] Invalid super node name: ${nodeName}.`);
+  process.exit(1);
+}
+
 if (process.env.IS_CONTAINER) {
-  isContainer = true;
-}
-
-let address = "";
-let port = 0;
-const configurationToLook =
-  operationMode.toLowerCase() === "supernode"
-    ? superNodesConfiguration
-    : peerNodesConfiguration;
-
-for (const node of configurationToLook.nodes) {
-  if (node.name === nodeName) {
-    address = node.address;
-    port = node.port;
-    break;
-  }
-}
-
-if (!address || !port) {
-  throw new Error("The node is not configured.");
+  applicationNode.setIsRunningInContainer(true);
 }
 
 const GREEN = "\u001b[32m";
@@ -51,8 +47,8 @@ const RESET = "\u001b[0m";
 
 console.log(
   `[${GREEN}${operationMode.toUpperCase()}${RESET}] [${GREEN}${
-    isContainer ? "CONTAINER" : "HOST MACHINE"
+    applicationNode.getIsRunningInContainer() ? "CONTAINER" : "HOST MACHINE"
   }${RESET}] Starting ${nodeName}...`
 );
-console.log("Node configuration: ", { nodeName, address, port });
+console.log("Node configuration: ", applicationNode);
 console.log();
