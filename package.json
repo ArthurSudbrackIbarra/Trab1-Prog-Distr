@@ -5,7 +5,7 @@
   "main": "build/index.js",
   "scripts": {
     "super-node-host": "npx tsc && node build/index.js super-node super-node-1",
-    "peer-node-host": "npx tsc && node build/index.js peer-node peer-node-1 9000 src/resources/books-1",
+    "peer-node-host": "npx tsc && node build/index.js peer-node host-peer-node 9900 src/resources/books-1",
     "super-node-container": "npx tsc && node build/index.js super-node $NODE_NAME",
     "peer-node-container": "npx tsc && node build/index.js peer-node $NODE_NAME $NODE_PORT $RESOURCES_DIRECTORY",
     "generate-docker-compose": "npx tsc && node build/configurations/generateDockerCompose.js",

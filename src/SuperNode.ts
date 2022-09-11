@@ -6,6 +6,12 @@ import {
 } from "./messages/messages";
 import Node from "./Node";
 import PeerNode from "./PeerNode";
+import { RED, RESET } from "./utils/colors";
+
+interface PeerNodeData {
+  peerNode: PeerNode;
+  lastKeepAliveTime: number;
+}
 
 export default class SuperNode extends Node {
   /*
@@ -15,12 +21,12 @@ export default class SuperNode extends Node {
   /*
     The map of peer nodes connected to this super node (name - object).
   */
-  private peerNodes: Map<string, PeerNode>;
+  private peerNodesData: Map<string, PeerNodeData>;
 
   constructor(name: string, address: string, port: number, order: number) {
     super(name, address, port);
     this.order = order;
-    this.peerNodes = new Map();
+    this.peerNodesData = new Map();
   }
 
   public toString(): string {
@@ -34,6 +40,7 @@ export default class SuperNode extends Node {
 
   public async start(): Promise<void> {
     this.startListening();
+    this.checkDeadPeerNodesRoutine();
   }
 
   private sendMessageToNode(message: Message, node: Node): Promise<void> {
@@ -86,7 +93,10 @@ export default class SuperNode extends Node {
               );
               return;
             }
-            this.peerNodes.set(registerMessage.name, peerNode);
+            this.peerNodesData.set(registerMessage.name, {
+              peerNode: peerNode,
+              lastKeepAliveTime: Date.now(),
+            });
             console.log(
               `Added '${peerNode.getName()} - ${peerNode.getAddress()}:${peerNode.getPort()}' to the list of peer nodes.`
             );
@@ -95,13 +105,27 @@ export default class SuperNode extends Node {
         case "keepAlive":
           {
             const keepAliveMessage = decodedMessage as KeepAliveMessage;
-            console.log(
-              `Received keep alive message from '${keepAliveMessage.name}'.`
-            );
-            // IMPLEMENT LOGIC.
+            const peerNodeData = this.peerNodesData.get(keepAliveMessage.name);
+            if (peerNodeData) {
+              peerNodeData.lastKeepAliveTime = Date.now();
+            }
           }
           break;
       }
     });
+  }
+
+  private checkDeadPeerNodesRoutine(): void {
+    setInterval(() => {
+      const currentTime = Date.now();
+      this.peerNodesData.forEach((peerNodeData, name) => {
+        if (currentTime - peerNodeData.lastKeepAliveTime > 10000) {
+          console.log(
+            `Peer node '${name}' has ${RED}disconnected${RESET} and will be removed.`
+          );
+          this.peerNodesData.delete(name);
+        }
+      });
+    }, 5000);
   }
 }
