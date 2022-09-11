@@ -8,7 +8,7 @@ services:
     ports:
       - 8000:8000
     build: .
-    entrypoint: npm run start-supernode-container
+    entrypoint: npm run super-node-container
   super-node-2:
     container_name: super-node-2
     environment:
@@ -16,7 +16,7 @@ services:
     ports:
       - 8001:8001
     build: .
-    entrypoint: npm run start-supernode-container
+    entrypoint: npm run super-node-container
   super-node-3:
     container_name: super-node-3
     environment:
@@ -24,7 +24,7 @@ services:
     ports:
       - 8002:8002
     build: .
-    entrypoint: npm run start-supernode-container
+    entrypoint: npm run super-node-container
   super-node-4:
     container_name: super-node-4
     environment:
@@ -32,15 +32,15 @@ services:
     ports:
       - 8003:8003
     build: .
-    entrypoint: npm run start-supernode-container
-  # Peer nodes.
+    entrypoint: npm run super-node-container
+  # Peer Nodes.
   peer-node-1:
     container_name: peer-node-1
     environment:
       - NODE_NAME=peer-node-1
-      - PORT=9000
+      - NODE_PORT=9000
       - RESOURCES_DIRECTORY=src/resources/books-1
     ports:
       - 9000:9000
     build: .
-    entrypoint: npm run start-peer-container
+    entrypoint: npm run peer-node-container

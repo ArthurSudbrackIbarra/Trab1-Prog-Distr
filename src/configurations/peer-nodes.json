@@ -1,0 +1,9 @@
+{
+    "nodes": [
+        {
+            "name": "peer-node-1",
+            "port": 9000,
+            "resources_directory": "src/resources/books-1"
+        }
+    ]
+}
