@@ -13,10 +13,7 @@ export default abstract class Node {
     this.port = port;
     this.isRunningInContainer = false;
     this.socket = dgram.createSocket("udp4");
-    this.socket.bind(
-      this.port,
-      this.isRunningInContainer ? "docker.host.internal" : this.address
-    );
+    this.socket.bind(this.port);
   }
 
   public getName(): string {

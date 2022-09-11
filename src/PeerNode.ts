@@ -1,6 +1,7 @@
 import Node from "./Node";
 import SuperNode from "./SuperNode";
 import System from "./System";
+import { wait } from "./utils/time";
 
 export default class PeerNode extends Node {
   /*
@@ -28,44 +29,89 @@ export default class PeerNode extends Node {
       this.resourcesDirectory
     }\n}`;
   }
+
+  /*
+    Entrypoint function.
+  */
   public async start(): Promise<void> {
-    /*
-      Method to start the peer node.
-    */
     while (true) {
       try {
-        this.registerToSuperNode();
+        const superNode = await this.registerToSuperNode();
+        this.superNode = superNode;
         break;
       } catch (error) {
         console.log(error);
-        await new Promise((resolve) => setTimeout(resolve, 5000));
+        await wait(5000);
       }
+    }
+    console.log(`Connected to super node ${this.superNode.getName()}.`);
+    this.startListening();
+
+    // Remove later.
+    while (true) {
+      this.sendMessageToSuperNode("Hello", this.superNode);
+      await wait(5000);
     }
   }
 
-  public registerToSuperNode(): Promise<void> {
-    return new Promise((resolve, reject) => {
+  private registerToSuperNode(): Promise<SuperNode> {
+    return new Promise(async (resolve, reject) => {
       const superNode = System.getRandomSuperNode();
       if (!superNode) {
-        reject(
-          `[${this.getName()}] No super nodes available. Unnable to connect.`
-        );
+        reject(`No super nodes available. Unnable to connect.`);
         return;
       }
+      try {
+        await this.sendMessageToSuperNode("Register", superNode);
+        resolve(superNode);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  private sendMessageToSuperNode(
+    message: string,
+    superNode: SuperNode | null
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!superNode) {
+        reject("The super node is null.");
+        return;
+      }
+      let address = superNode.getAddress();
+
+      if (
+        (address === "localhost" || address === "127.0.0.1") &&
+        this.getIsRunningInContainer()
+      ) {
+        address = "host.docker.internal";
+      }
+
+      // Remove later.
+      console.log(
+        `Sending message '${message}' to ${address}:${superNode.getPort()}`
+      );
+
       this.getSocket().send(
-        Buffer.from("Register message."),
+        Buffer.from(message),
         superNode.getPort(),
-        superNode.getAddress(),
+        address,
         (error) => {
           if (error) {
-            reject(
-              `[${this.getName()}] Error while sending message to super node.`
-            );
+            reject(error);
           } else {
-            this.superNode = superNode;
             resolve();
           }
         }
+      );
+    });
+  }
+
+  private startListening(): void {
+    this.getSocket().on("message", (message, remote) => {
+      console.log(
+        `Received message '${message}' from ${remote.address}:${remote.port}`
       );
     });
   }
