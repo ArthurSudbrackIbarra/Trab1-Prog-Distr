@@ -123,7 +123,7 @@ export default class PeerNode extends Node {
         return;
       }
       this.start();
-    }, 5000);
+    }, 10000);
   }
 
   private startListening(): void {
