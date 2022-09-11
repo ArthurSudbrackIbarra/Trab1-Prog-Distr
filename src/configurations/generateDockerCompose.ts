@@ -20,6 +20,7 @@ for (let i = 0; i < superNodesConfiguration.nodes.length; i++) {
 
 try {
   fs.writeFileSync("docker-compose.yaml", dockerComposeContent);
+  console.log("docker-compose.yaml generated.\n");
 } catch (error) {
   console.error(`Unnable to write docker-compose.yml file: ${error}`);
 }
