@@ -16,13 +16,12 @@ dockerComposeContent += 'version: "3.9"\n';
 dockerComposeContent += "services:\n";
 dockerComposeContent += "  # Super nodes.\n";
 
-for (let i = 0; i < superNodesConfiguration.nodes.length; i++) {
-  const node = superNodesConfiguration.nodes[i];
+for (const node of superNodesConfiguration.nodes) {
   if (!["127.0.0.1", "localhost"].includes(node.address.toLowerCase())) {
     continue;
   }
-  dockerComposeContent += `  super-node-${i + 1}:\n`;
-  dockerComposeContent += `    container_name: super-node-${i + 1}\n`;
+  dockerComposeContent += `  ${node.name}:\n`;
+  dockerComposeContent += `    container_name: ${node.name}\n`;
   dockerComposeContent += "    ports:\n";
   dockerComposeContent += `      - ${node.port}:${node.port}/udp\n`;
   dockerComposeContent += "    build: .\n";
@@ -32,11 +31,10 @@ for (let i = 0; i < superNodesConfiguration.nodes.length; i++) {
 const jsonFileNames: string[] = [];
 
 dockerComposeContent += "  # Peer Nodes.\n";
-for (let i = 0; i < peerNodesConfiguration.nodes.length; i++) {
-  const node = peerNodesConfiguration.nodes[i];
+for (const node of peerNodesConfiguration.nodes) {
   jsonFileNames.push(node.name);
-  dockerComposeContent += `  peer-node-${i + 1}:\n`;
-  dockerComposeContent += `    container_name: peer-node-${i + 1}\n`;
+  dockerComposeContent += `  ${node.name}:\n`;
+  dockerComposeContent += `    container_name: ${node.name}\n`;
   dockerComposeContent += "    ports:\n";
   dockerComposeContent += `      - ${node.port}:${node.port}/udp\n`;
   dockerComposeContent += "    build: .\n";
