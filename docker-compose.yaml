@@ -3,58 +3,38 @@ services:
   # Super nodes.
   super-node-1:
     container_name: super-node-1
-    environment:
-      - NODE_NAME=super-node-1
     ports:
       - 8000:8000/udp
     build: .
-    entrypoint: npm run super-node-container
+    entrypoint: npm run as-super-node -- "super-node-1"
   super-node-2:
     container_name: super-node-2
-    environment:
-      - NODE_NAME=super-node-2
     ports:
       - 8001:8001/udp
     build: .
-    entrypoint: npm run super-node-container
+    entrypoint: npm run as-super-node -- "super-node-2"
   # Peer Nodes.
   peer-node-1:
     container_name: peer-node-1
-    environment:
-      - NODE_NAME=peer-node-1
-      - NODE_PORT=9000
-      - RESOURCES_DIRECTORY=src/resources/books-1
     ports:
       - 9000:9000/udp
     build: .
-    entrypoint: npm run peer-node-container
+    entrypoint: npm run as-peer-node -- "peer-node-1" "9000" "src/resources/books-1"
   peer-node-2:
     container_name: peer-node-2
-    environment:
-      - NODE_NAME=peer-node-2
-      - NODE_PORT=9001
-      - RESOURCES_DIRECTORY=src/resources/books-2
     ports:
       - 9001:9001/udp
     build: .
-    entrypoint: npm run peer-node-container
+    entrypoint: npm run as-peer-node -- "peer-node-2" "9001" "src/resources/books-2"
   peer-node-3:
     container_name: peer-node-3
-    environment:
-      - NODE_NAME=peer-node-3
-      - NODE_PORT=9002
-      - RESOURCES_DIRECTORY=src/resources/books-3
     ports:
       - 9002:9002/udp
     build: .
-    entrypoint: npm run peer-node-container
+    entrypoint: npm run as-peer-node -- "peer-node-3" "9002" "src/resources/books-3"
   peer-node-4:
     container_name: peer-node-4
-    environment:
-      - NODE_NAME=peer-node-4
-      - NODE_PORT=9003
-      - RESOURCES_DIRECTORY=src/resources/books-4
     ports:
       - 9003:9003/udp
     build: .
-    entrypoint: npm run peer-node-container
+    entrypoint: npm run as-peer-node -- "peer-node-4" "9003" "src/resources/books-4"

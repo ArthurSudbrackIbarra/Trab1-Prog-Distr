@@ -38,18 +38,19 @@ if (operationMode.toLowerCase() === "super-node") {
     Peer node.
   */
   const port = parseInt(process.argv[4]);
-  const resourceDirectory = process.argv[5];
-  if (!port || !resourceDirectory) {
+  const resourcesDirectory = process.argv[5];
+  if (!port || !resourcesDirectory) {
     console.log(
-      "Usage: npx tsc && node build/index.js peer-node <node-name> <port> <resources-directory>"
+      "Usage: npx tsc && node build/index.js peer-node <node-name> <node-port> <resources-directory>"
     );
     process.exit(1);
   }
+
   applicationNode = new PeerNode(
     nodeName,
     "127.0.0.1",
     port,
-    resourceDirectory
+    resourcesDirectory
   );
 } else {
   /*
@@ -66,14 +67,8 @@ if (!applicationNode) {
   process.exit(1);
 }
 
-if (process.env.IS_CONTAINER) {
-  applicationNode.setIsRunningInContainer(true);
-}
-
 console.log(
-  `[${GREEN}${operationMode.toUpperCase()}${RESET}] [${GREEN}${
-    applicationNode.getIsRunningInContainer() ? "CONTAINER" : "HOST MACHINE"
-  }${RESET}]`
+  `[${GREEN}STARTED${RESET}] - [${applicationNode.getName()}] [${applicationNode.getAddress()}:${applicationNode.getPort()}]`
 );
 console.log(applicationNode.toString(), "\n");
 

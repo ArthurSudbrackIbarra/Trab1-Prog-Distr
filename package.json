@@ -4,10 +4,8 @@
   "description": "Trabalho 1 de Programação Distribuída.",
   "main": "build/index.js",
   "scripts": {
-    "super-node-host": "npx tsc && node build/index.js super-node super-node-1",
-    "peer-node-host": "npx tsc && node build/index.js peer-node host-peer-node 9900 src/resources/books-1",
-    "super-node-container": "npx tsc && node build/index.js super-node $NODE_NAME",
-    "peer-node-container": "npx tsc && node build/index.js peer-node $NODE_NAME $NODE_PORT $RESOURCES_DIRECTORY",
+    "as-super-node": "npx tsc && node build/index.js super-node",
+    "as-peer-node": "npx tsc && node build/index.js peer-node",
     "generate-docker-compose": "npx tsc && node build/configurations/generateDockerCompose.js",
     "start-docker": "npm run generate-docker-compose && docker compose up --build"
   },

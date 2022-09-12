@@ -50,7 +50,7 @@ export default class PeerNode extends Node {
         await wait(5000);
       }
     }
-    console.log(`Trying to register to super node ${superNode.getName()}.`);
+    console.log(`Trying to register to super node '${superNode.getName()}'.`);
     this.startListening();
     this.checkNoSuperNodeRoutine();
   }
@@ -87,10 +87,7 @@ export default class PeerNode extends Node {
         return;
       }
       let address = superNode.getAddress();
-      if (
-        (address === "localhost" || address === "127.0.0.1") &&
-        this.getIsRunningInContainer()
-      ) {
+      if (address === "localhost" || address === "127.0.0.1") {
         address = "host.docker.internal";
       }
       const jsonMessage = JSON.stringify(message);
