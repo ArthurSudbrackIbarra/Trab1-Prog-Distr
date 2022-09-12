@@ -88,7 +88,7 @@ for (const fileName of jsonFileNames) {
 console.log(
   `\n${YELLOW}=> ${RESET}Por favor, antes de continuar, leia o README do projeto com as instruções de como operar o sistema.\n`
 );
-console.log("Pressione qualquer tecla para continuar...");
+console.log("Pressione qualquer tecla para continuar...\n");
 process.stdin.setRawMode(true);
 process.stdin.resume();
 process.stdin.on("data", process.exit.bind(process, 0));
