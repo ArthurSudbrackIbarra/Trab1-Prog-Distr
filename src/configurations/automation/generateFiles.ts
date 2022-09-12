@@ -28,11 +28,8 @@ for (const node of superNodesConfiguration.nodes) {
   dockerComposeContent += `    entrypoint: npm run as-super-node "${node.name}"\n`;
 }
 
-const jsonFileNames: string[] = [];
-
 dockerComposeContent += "  # Peer Nodes.\n";
 for (const node of peerNodesConfiguration.nodes) {
-  jsonFileNames.push(node.name);
   dockerComposeContent += `  ${node.name}:\n`;
   dockerComposeContent += `    container_name: ${node.name}\n`;
   dockerComposeContent += "    ports:\n";
@@ -50,6 +47,7 @@ try {
   console.log(`[${GREEN}OK${RESET}] docker-compose.yaml generated.\n`);
 } catch (error) {
   console.error(`Unnable to write docker-compose.yml file: ${error}`);
+  process.exit(1);
 }
 
 /*
@@ -71,15 +69,17 @@ const defaultContent = {
     },
   ],
 };
-for (const fileName of jsonFileNames) {
+for (const node of peerNodesConfiguration.nodes) {
+  const fileName = `${node.name}.json`;
   try {
     fs.writeFileSync(
-      `src/configurations/requests/${fileName}.json`,
+      `src/configurations/requests/${fileName}`,
       JSON.stringify(defaultContent, null, 2)
     );
-    console.log(`[${GREEN}OK${RESET}] ${fileName}.json generated.`);
+    console.log(`[${GREEN}OK${RESET}] ${fileName} generated.`);
   } catch (error) {
-    console.error(`Unnable to write ${fileName}.json file: ${error}`);
+    console.error(`Unnable to write ${fileName} file: ${error}`);
+    process.exit(1);
   }
 }
 
