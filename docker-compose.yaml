@@ -19,22 +19,38 @@ services:
     ports:
       - 9000:9000/udp
     build: .
+    volumes:
+      - type: bind
+        source: ./src/configurations/requests/peer-node-1.json
+        target: /home/trab-1-prog-distr/src/configurations/requests/peer-node-1.json
     entrypoint: npm run as-peer-node -- "peer-node-1" "9000" "src/resources/books-1"
   peer-node-2:
     container_name: peer-node-2
     ports:
       - 9001:9001/udp
     build: .
+    volumes:
+      - type: bind
+        source: ./src/configurations/requests/peer-node-2.json
+        target: /home/trab-1-prog-distr/src/configurations/requests/peer-node-2.json
     entrypoint: npm run as-peer-node -- "peer-node-2" "9001" "src/resources/books-2"
   peer-node-3:
     container_name: peer-node-3
     ports:
       - 9002:9002/udp
     build: .
+    volumes:
+      - type: bind
+        source: ./src/configurations/requests/peer-node-3.json
+        target: /home/trab-1-prog-distr/src/configurations/requests/peer-node-3.json
     entrypoint: npm run as-peer-node -- "peer-node-3" "9002" "src/resources/books-3"
   peer-node-4:
     container_name: peer-node-4
     ports:
       - 9003:9003/udp
     build: .
+    volumes:
+      - type: bind
+        source: ./src/configurations/requests/peer-node-4.json
+        target: /home/trab-1-prog-distr/src/configurations/requests/peer-node-4.json
     entrypoint: npm run as-peer-node -- "peer-node-4" "9003" "src/resources/books-4"

@@ -3,11 +3,11 @@ import {
   Message,
   RegisterMessage,
   RegisterResponseMessage,
-} from "./messages/messages";
+} from "../messages/messages";
 import Node from "./Node";
 import SuperNode from "./SuperNode";
 import System from "./System";
-import { wait } from "./utils/time";
+import { wait } from "../utils/time";
 
 export default class PeerNode extends Node {
   /*

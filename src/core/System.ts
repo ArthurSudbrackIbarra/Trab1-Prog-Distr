@@ -1,4 +1,3 @@
-import PeerNode from "./PeerNode";
 import SuperNode from "./SuperNode";
 
 export default class System {

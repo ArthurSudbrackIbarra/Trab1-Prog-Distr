@@ -3,10 +3,10 @@ import {
   Message,
   RegisterMessage,
   RegisterResponseMessage,
-} from "./messages/messages";
+} from "../messages/messages";
 import Node from "./Node";
 import PeerNode from "./PeerNode";
-import { RED, RESET } from "./utils/colors";
+import { RED, RESET } from "../utils/colors";
 
 interface PeerNodeData {
   peerNode: PeerNode;

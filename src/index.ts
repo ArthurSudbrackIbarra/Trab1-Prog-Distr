@@ -1,9 +1,9 @@
-import superNodesConfiguration from "./configurations/super-nodes.json";
+import superNodesConfiguration from "./configurations/nodes/super-nodes.json";
 
-import Node from "./Node";
-import System from "./System";
-import SuperNode from "./SuperNode";
-import PeerNode from "./PeerNode";
+import Node from "./core/Node";
+import System from "./core/System";
+import SuperNode from "./core/SuperNode";
+import PeerNode from "./core/PeerNode";
 import { GREEN, RED, RESET } from "./utils/colors";
 
 /*
