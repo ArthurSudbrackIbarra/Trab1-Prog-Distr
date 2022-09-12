@@ -4,7 +4,7 @@ import Node from "./core/Node";
 import System from "./core/System";
 import SuperNode from "./core/SuperNode";
 import PeerNode from "./core/PeerNode";
-import { GREEN, RED, RESET } from "./utils/colors";
+import { BLUE, RED, RESET } from "./utils/colors";
 
 /*
   System (Information about the whole system).
@@ -37,19 +37,18 @@ if (operationMode.toLowerCase() === "super-node") {
   /*
     Peer node.
   */
-  const port = parseInt(process.argv[4]);
+  const nodePort = parseInt(process.argv[4]);
   const resourcesDirectory = process.argv[5];
-  if (!port || !resourcesDirectory) {
+  if (!nodePort || !resourcesDirectory) {
     console.log(
       "Usage: npx tsc && node build/index.js peer-node <node-name> <node-port> <resources-directory>"
     );
     process.exit(1);
   }
-
   applicationNode = new PeerNode(
     nodeName,
     "127.0.0.1",
-    port,
+    nodePort,
     resourcesDirectory
   );
 } else {
@@ -68,11 +67,12 @@ if (!applicationNode) {
 }
 
 console.log(
-  `[${GREEN}STARTED${RESET}] - [${applicationNode.getName()}] [${applicationNode.getAddress()}:${applicationNode.getPort()}]`
+  `[${BLUE}STARTED${RESET}] - [${applicationNode.getName()}] [${applicationNode.getAddress()}:${applicationNode.getPort()}]`
 );
 console.log(applicationNode.toString(), "\n");
 
 /*
   Starting the application node.
 */
+applicationNode.bindSocket();
 applicationNode.start();

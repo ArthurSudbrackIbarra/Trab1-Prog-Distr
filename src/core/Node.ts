@@ -11,7 +11,6 @@ export default abstract class Node {
     this.address = address;
     this.port = port;
     this.socket = dgram.createSocket("udp4");
-    this.socket.bind(this.port);
   }
 
   public getName(): string {
@@ -25,6 +24,9 @@ export default abstract class Node {
   }
   public getSocket(): dgram.Socket {
     return this.socket;
+  }
+  public bindSocket(): void {
+    this.socket.bind(this.port);
   }
 
   public abstract toString(): string;
