@@ -1,11 +1,13 @@
 import fs from "fs";
-import { BLUE, RESET } from "../../utils/colors";
+import { BLUE, GREEN, RESET, YELLOW } from "../../utils/colors";
 import superNodesConfiguration from "../nodes/super-nodes.json";
 import peerNodesConfiguration from "../nodes/peer-nodes.json";
 
 /*
   Generating docker-compose.yaml file.
 */
+
+console.log(`--- ${BLUE}Generating docker-compose.yaml file${RESET} ---\n`);
 
 const DOCKER_COMPOSE_FILE_PATH = "docker-compose.yaml";
 
@@ -47,7 +49,7 @@ for (let i = 0; i < peerNodesConfiguration.nodes.length; i++) {
 
 try {
   fs.writeFileSync(DOCKER_COMPOSE_FILE_PATH, dockerComposeContent);
-  console.log(`[${BLUE}INFO${RESET}] docker-compose.yaml generated.\n`);
+  console.log(`[${GREEN}OK${RESET}] docker-compose.yaml generated.\n`);
 } catch (error) {
   console.error(`Unnable to write docker-compose.yml file: ${error}`);
 }
@@ -55,6 +57,10 @@ try {
 /*
   Generating peer nodes requests .json files.
 */
+
+console.log(
+  `--- ${BLUE}Generating peer nodes resource request JSON files${RESET} ---\n`
+);
 
 const REQUESTS_DIRECTORY_PATH = "src/configurations/requests";
 fs.readdirSync(REQUESTS_DIRECTORY_PATH).forEach((file) => {
@@ -73,9 +79,16 @@ for (const fileName of jsonFileNames) {
       `src/configurations/requests/${fileName}.json`,
       JSON.stringify(defaultContent, null, 2)
     );
-    console.log(`[${BLUE}INFO${RESET}] ${fileName}.json generated.`);
+    console.log(`[${GREEN}OK${RESET}] ${fileName}.json generated.`);
   } catch (error) {
     console.error(`Unnable to write ${fileName}.json file: ${error}`);
   }
 }
-console.log();
+
+console.log(
+  `\n${YELLOW}=> ${RESET}Por favor, antes de continuar, leia o README do projeto com as instruções de como operar o sistema.\n`
+);
+console.log("Pressione qualquer tecla para continuar...");
+process.stdin.setRawMode(true);
+process.stdin.resume();
+process.stdin.on("data", process.exit.bind(process, 0));
