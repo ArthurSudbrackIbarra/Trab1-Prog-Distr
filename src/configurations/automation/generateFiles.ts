@@ -24,7 +24,7 @@ for (let i = 0; i < superNodesConfiguration.nodes.length; i++) {
   dockerComposeContent += "    ports:\n";
   dockerComposeContent += `      - ${node.port}:${node.port}/udp\n`;
   dockerComposeContent += "    build: .\n";
-  dockerComposeContent += `    entrypoint: npm run as-super-node -- "${node.name}"\n`;
+  dockerComposeContent += `    entrypoint: npm run as-super-node "${node.name}"\n`;
 }
 
 const jsonFileNames: string[] = [];
@@ -41,8 +41,8 @@ for (let i = 0; i < peerNodesConfiguration.nodes.length; i++) {
   dockerComposeContent += `    volumes:\n`;
   dockerComposeContent += `      - type: bind\n`;
   dockerComposeContent += `        source: ./src/configurations/requests/${node.name}.json\n`;
-  dockerComposeContent += `        target: /home/trab-1-prog-distr/src/configurations/requests/${node.name}.json\n`;
-  dockerComposeContent += `    entrypoint: npm run as-peer-node -- "${node.name}" "${node.port}" "${node.resources_directory}"\n`;
+  dockerComposeContent += `        target: /home/trab-1-prog-distr/build/configurations/requests/${node.name}.json\n`;
+  dockerComposeContent += `    entrypoint: npm run as-peer-node "${node.name}" "${node.port}" "${node.resources_directory}"\n`;
 }
 
 try {

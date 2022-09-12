@@ -1,3 +1,4 @@
+import fs from "fs";
 import {
   KeepAliveMessage,
   Message,
@@ -8,6 +9,9 @@ import Node from "./Node";
 import SuperNode from "./SuperNode";
 import System from "./System";
 import { wait } from "../utils/time";
+import { Resources } from "../resources/resources";
+import { RED, RESET, YELLOW } from "../utils/colors";
+import path from "path";
 
 export default class PeerNode extends Node {
   /*
@@ -141,6 +145,7 @@ export default class PeerNode extends Node {
               this.superNode =
                 System.getSuperNodeByName(registerResponseMessage.name) || null;
               this.startKeepAliveMessages();
+              this.monitorRequestsFile();
             } else {
               console.error(
                 `Error registering to super node ${registerResponseMessage.name}.`
@@ -171,6 +176,34 @@ export default class PeerNode extends Node {
         console.error(
           `Error sending keep alive message to super node ${this.superNode.getName()}.`
         );
+      }
+    }, 5000);
+  }
+
+  private requests: Resources | null = null;
+  private monitorRequestsFile(): void {
+    setInterval(() => {
+      const filePath = path.join(
+        __dirname,
+        `../configurations/requests/${this.getName()}.json`
+      );
+      if (!fs.existsSync(filePath)) {
+        console.log(
+          `Requests file '${filePath}' ${RED}does not${RESET} exist.`
+        );
+        return;
+      }
+      const fileContent = fs.readFileSync(filePath).toString();
+      const requests = JSON.parse(fileContent) as Resources;
+      if (!this.requests) {
+        this.requests = requests;
+        return;
+      }
+      if (JSON.stringify(this.requests) === JSON.stringify(requests)) {
+        return;
+      } else {
+        console.log(`${YELLOW}Detected changes on file ${filePath}.${RESET}`);
+        this.requests = requests;
       }
     }, 5000);
   }

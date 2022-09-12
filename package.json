@@ -4,10 +4,11 @@
   "description": "Trabalho 1 de Programação Distribuída.",
   "main": "build/index.js",
   "scripts": {
-    "as-super-node": "npx tsc && node build/index.js super-node",
-    "as-peer-node": "npx tsc && node build/index.js peer-node",
+    "copy-assets": "cp -r src/configurations/requests build/configurations/requests",
+    "as-super-node": "npx tsc && npm run copy-assets && node build/index.js super-node",
+    "as-peer-node": "npx tsc && npm run copy-assets && node build/index.js peer-node",
     "generate-files": "npx tsc && node build/configurations/automation/generateFiles.js",
-    "start-docker": "npm run generate-files && docker compose up --build"
+    "start": "npm run generate-files && docker compose up --build"
   },
   "author": "Arthur Sudbrack Ibarra, Luiz Eduardo Mello dos Reis, Willian Magnum Albeche",
   "license": "ISC",
