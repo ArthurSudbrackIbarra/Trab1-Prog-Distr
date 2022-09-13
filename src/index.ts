@@ -11,7 +11,7 @@ import { BLUE, RED, RESET } from "./utils/colors";
 */
 for (let i = 0; i < superNodesConfiguration.nodes.length; i++) {
   const node = superNodesConfiguration.nodes[i];
-  const order = i + 1;
+  const order = i;
   System.addSuperNode(new SuperNode(node.name, node.address, node.port, order));
 }
 

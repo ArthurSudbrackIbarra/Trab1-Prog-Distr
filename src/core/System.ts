@@ -19,4 +19,7 @@ export default class System {
       (superNode) => superNode.getOrder() === nextOrder
     );
   }
+  public static getPartitionsNumber(): number {
+    return this.superNodes.length;
+  }
 }

@@ -7,6 +7,7 @@ import {
 import Node from "./Node";
 import PeerNode from "./PeerNode";
 import { RED, RESET } from "../utils/colors";
+import System from "./System";
 
 interface PeerNodeData {
   peerNode: PeerNode;
@@ -100,6 +101,21 @@ export default class SuperNode extends Node {
             console.log(
               `Added '${peerNode.getName()} - ${peerNode.getAddress()}:${peerNode.getPort()}' to the list of peer nodes.`
             );
+            for (const resource of registerMessage.resources) {
+              const contentHashAsNumber = parseInt(resource.contentHash, 16);
+              const partitionsNumber = System.getPartitionsNumber();
+              const partition = contentHashAsNumber % partitionsNumber;
+              console.log(`Partition number: ${partition}`);
+              if (partition === this.order) {
+                console.log(
+                  `Resource '${resource.fileName}' will be stored in this supernode.`
+                );
+              } else {
+                console.log(
+                  `Resource '${resource.fileName}' will NOT be stored in this supernode.`
+                );
+              }
+            }
           }
           break;
         case "keepAlive":

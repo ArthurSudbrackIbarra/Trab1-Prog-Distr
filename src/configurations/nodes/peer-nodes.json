@@ -9,6 +9,11 @@
             "name": "peer-node-2",
             "port": 9001,
             "resources_directory": "books-2"
+        },
+        {
+            "name": "peer-node-3",
+            "port": 9002,
+            "resources_directory": "books-3"
         }
     ]
 }
