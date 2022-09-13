@@ -8,7 +8,7 @@
     "as-super-node": "npx tsc && npm run copy-non-ts-files && node build/index.js super-node",
     "as-peer-node": "npx tsc && npm run copy-non-ts-files && node build/index.js peer-node",
     "generate-files": "npx tsc && node build/configurations/automation/generateFiles.js",
-    "start": "npm run generate-files && docker compose up --build"
+    "start": "docker compose down & npm run generate-files && docker compose up --build"
   },
   "author": "Arthur Sudbrack Ibarra, Luiz Eduardo Mello dos Reis, Willian Magnum Albeche",
   "license": "ISC",

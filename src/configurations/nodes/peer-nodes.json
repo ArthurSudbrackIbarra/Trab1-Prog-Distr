@@ -11,12 +11,6 @@
             "address": "172.24.2.5",
             "port": 9001,
             "resources_directory": "books-2"
-        },
-        {
-            "name": "peer-node-john",
-            "address": "172.24.2.6",
-            "port": 9002,
-            "resources_directory": "books-3"
         }
     ]
 }
