@@ -7,8 +7,9 @@ import {
 } from "../messages/messages";
 import Node from "./Node";
 import PeerNode from "./PeerNode";
-import { RED, RESET } from "../utils/colors";
+import { GREEN, RED, RESET, YELLOW } from "../utils/colors";
 import System from "./System";
+import { Resource } from "../resources/resources";
 
 interface PeerNodeData {
   peerNode: PeerNode;
@@ -106,46 +107,12 @@ export default class SuperNode extends Node {
             console.log(
               `Added '${peerNode.getName()} - ${peerNode.getAddress()}:${peerNode.getPort()}' to the list of peer nodes.`
             );
-            for (const resource of registerMessage.resources) {
-              const contentHashAsNumber = parseInt(resource.contentHash, 16);
-              const partitionsNumber = System.getPartitionsNumber();
-              const partition = contentHashAsNumber % partitionsNumber;
-              if (partition === this.order) {
-                console.log(
-                  `Resource '${resource.fileName}' will be managed by this supernode.`
-                );
-                // Continue...
-              } else {
-                console.log(
-                  `Resource '${resource.fileName}' will NOT be managed by this supernode.`
-                );
-                const resourceTransferMessage: ResourceTransferMessage = {
-                  type: "resourceTransfer",
-                  superNodeName: this.getName(),
-                  peerNodeName: registerMessage.peerNodeName,
-                  peerNodeAddress: remote.address,
-                  peerNodePort: registerMessage.peerNodePort,
-                  resource: resource,
-                };
-                const nextSuperNode = System.getNextSuperNode(this.order);
-                if (!nextSuperNode) {
-                  console.error("Could not find next super node in the ring.");
-                  return;
-                }
-                try {
-                  await this.sendMessageToNode(
-                    resourceTransferMessage,
-                    nextSuperNode
-                  );
-                } catch (error) {
-                  console.error(
-                    "Error sending resource transfer message: ",
-                    error
-                  );
-                  return;
-                }
-              }
-            }
+            this.handleResources(
+              registerMessage.resources,
+              registerMessage.peerNodeName,
+              remote.address,
+              registerMessage.peerNodePort
+            );
           }
           break;
         case "keepAlive":
@@ -157,6 +124,18 @@ export default class SuperNode extends Node {
             if (peerNodeData) {
               peerNodeData.lastKeepAliveTime = Date.now();
             }
+          }
+          break;
+        case "resourceTransfer":
+          {
+            const resourceTransferMessage =
+              decodedMessage as ResourceTransferMessage;
+            this.handleResources(
+              [resourceTransferMessage.resource],
+              resourceTransferMessage.peerNodeName,
+              resourceTransferMessage.peerNodeAddress,
+              resourceTransferMessage.peerNodePort
+            );
           }
           break;
       }
@@ -175,5 +154,47 @@ export default class SuperNode extends Node {
         }
       });
     }, 5000);
+  }
+
+  private async handleResources(
+    resources: Resource[],
+    peerNodeName: string,
+    peerNodeAddress: string,
+    peerNodePort: number
+  ): Promise<void> {
+    for (const resource of resources) {
+      const contentHashAsNumber = parseInt(resource.contentHash, 16);
+      const partitionsNumber = System.getPartitionsNumber();
+      const partition = contentHashAsNumber % partitionsNumber;
+      if (partition === this.order) {
+        console.log(
+          `Resource '${resource.fileName}' will be ${GREEN}managed by me${RESET}.`
+        );
+        // Continue...
+      } else {
+        console.log(
+          `Resource '${resource.fileName}' will ${YELLOW}NOT be managed by me${RESET}.`
+        );
+        const resourceTransferMessage: ResourceTransferMessage = {
+          type: "resourceTransfer",
+          superNodeName: this.getName(),
+          peerNodeName: peerNodeName,
+          peerNodeAddress: peerNodeAddress,
+          peerNodePort: peerNodePort,
+          resource: resource,
+        };
+        const nextSuperNode = System.getNextSuperNode(this.order);
+        if (!nextSuperNode) {
+          console.error("Could not find next super node in the ring.");
+          return;
+        }
+        try {
+          await this.sendMessageToNode(resourceTransferMessage, nextSuperNode);
+        } catch (error) {
+          console.error("Error sending resource transfer message: ", error);
+          return;
+        }
+      }
+    }
   }
 }

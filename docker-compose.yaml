@@ -52,3 +52,14 @@ services:
         target: /home/trab-1-prog-distr/build/configurations/requests/peer-node-maria.json
     build: .
     entrypoint: npm run as-peer-node -- "peer-node-maria"
+  peer-node-carlos:
+    container_name: peer-node-carlos
+    networks:
+      nodes_network:
+        ipv4_address: 172.24.2.6
+    volumes:
+      - type: bind
+        source: ./src/configurations/requests/peer-node-carlos.json
+        target: /home/trab-1-prog-distr/build/configurations/requests/peer-node-carlos.json
+    build: .
+    entrypoint: npm run as-peer-node -- "peer-node-carlos"

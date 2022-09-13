@@ -8,12 +8,12 @@
         {
             "name": "super-node-luiz",
             "address": "172.24.2.2",
-            "port": 8001
+            "port": 8000
         },
         {
             "name": "super-node-willian",
             "address": "172.24.2.3",
-            "port": 8002
+            "port": 8000
         }
     ]
 }

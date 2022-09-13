@@ -9,8 +9,14 @@
         {
             "name": "peer-node-maria",
             "address": "172.24.2.5",
-            "port": 9001,
+            "port": 9000,
             "resources_directory": "books-2"
+        },
+        {
+            "name": "peer-node-carlos",
+            "address": "172.24.2.6",
+            "port": 9000,
+            "resources_directory": "books-3"
         }
     ]
 }
