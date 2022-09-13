@@ -1,0 +1,3 @@
+Little mermaid is a mermaid.
+Little mermaid is from Disney.
+End.

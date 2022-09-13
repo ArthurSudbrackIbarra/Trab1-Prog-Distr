@@ -18,3 +18,13 @@ services:
         source: ./src/configurations/requests/peer-node-1.json
         target: /home/trab-1-prog-distr/build/configurations/requests/peer-node-1.json
     entrypoint: npm run as-peer-node -- "peer-node-1" "9000" "books-1"
+  peer-node-2:
+    container_name: peer-node-2
+    ports:
+      - 9001:9001/udp
+    build: .
+    volumes:
+      - type: bind
+        source: ./src/configurations/requests/peer-node-2.json
+        target: /home/trab-1-prog-distr/build/configurations/requests/peer-node-2.json
+    entrypoint: npm run as-peer-node -- "peer-node-2" "9001" "books-2"

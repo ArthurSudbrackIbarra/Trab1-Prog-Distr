@@ -11,7 +11,8 @@ import System from "./System";
 import { wait } from "../utils/time";
 import { RED, RESET, YELLOW } from "../utils/colors";
 import path from "path";
-import { ResourceRequest } from "../resources/resources";
+import { Resource, ResourceRequest } from "../resources/resources";
+import { createHash } from "crypto";
 
 export default class PeerNode extends Node {
   /*
@@ -71,12 +72,7 @@ export default class PeerNode extends Node {
           type: "register",
           peerNodeName: this.getName(),
           peerNodePort: this.getPort(),
-          resources: [
-            {
-              fileName: "Example.txt",
-              contentHash: "12345",
-            },
-          ],
+          resources: this.readResourcesDirectory(),
         };
         await this.sendMessageToSuperNode(message, superNode);
         resolve(superNode);
@@ -213,5 +209,30 @@ export default class PeerNode extends Node {
         this.requests = requests;
       }
     }, 5000);
+  }
+
+  private readResourcesDirectory(): Resource[] {
+    const resourcesPath = path.join(
+      __dirname,
+      "../resources",
+      this.resourcesDirectory
+    );
+    if (!fs.existsSync(resourcesPath)) {
+      throw new Error(
+        `Resources directory '${resourcesPath}' ${RED}does not exist${RESET}.`
+      );
+    }
+    const resources: Resource[] = [];
+    const files = fs.readdirSync(resourcesPath);
+    for (const fileName of files) {
+      const filePath = path.join(resourcesPath, fileName);
+      const fileContent = fs.readFileSync(filePath);
+      const resource: Resource = {
+        fileName: fileName,
+        contentHash: createHash("sha256").update(fileContent).digest("hex"),
+      };
+      resources.push(resource);
+    }
+    return resources;
   }
 }
