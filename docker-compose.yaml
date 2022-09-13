@@ -34,29 +34,32 @@ services:
     container_name: peer-node-zeca
     networks:
       nodes_network:
+        ipv4_address: 172.24.2.4
     volumes:
       - type: bind
         source: ./src/configurations/requests/peer-node-zeca.json
         target: /home/trab-1-prog-distr/build/configurations/requests/peer-node-zeca.json
     build: .
-    entrypoint: npm run as-peer-node -- "peer-node-zeca" "9000" "books-1"
+    entrypoint: npm run as-peer-node -- "peer-node-zeca"
   peer-node-maria:
     container_name: peer-node-maria
     networks:
       nodes_network:
+        ipv4_address: 172.24.2.5
     volumes:
       - type: bind
         source: ./src/configurations/requests/peer-node-maria.json
         target: /home/trab-1-prog-distr/build/configurations/requests/peer-node-maria.json
     build: .
-    entrypoint: npm run as-peer-node -- "peer-node-maria" "9001" "books-2"
+    entrypoint: npm run as-peer-node -- "peer-node-maria"
   peer-node-john:
     container_name: peer-node-john
     networks:
       nodes_network:
+        ipv4_address: 172.24.2.6
     volumes:
       - type: bind
         source: ./src/configurations/requests/peer-node-john.json
         target: /home/trab-1-prog-distr/build/configurations/requests/peer-node-john.json
     build: .
-    entrypoint: npm run as-peer-node -- "peer-node-john" "9002" "books-3"
+    entrypoint: npm run as-peer-node -- "peer-node-john"

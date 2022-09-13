@@ -2,16 +2,19 @@
     "nodes": [
         {
             "name": "peer-node-zeca",
+            "address": "172.24.2.4",
             "port": 9000,
             "resources_directory": "books-1"
         },
         {
             "name": "peer-node-maria",
+            "address": "172.24.2.5",
             "port": 9001,
             "resources_directory": "books-2"
         },
         {
             "name": "peer-node-john",
+            "address": "172.24.2.6",
             "port": 9002,
             "resources_directory": "books-3"
         }

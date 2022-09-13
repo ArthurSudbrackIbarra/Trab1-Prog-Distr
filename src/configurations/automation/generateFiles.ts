@@ -40,12 +40,13 @@ for (const node of peerNodesConfiguration.nodes) {
   dockerComposeContent += `    container_name: ${node.name}\n`;
   dockerComposeContent += `    networks:\n`;
   dockerComposeContent += `      nodes_network:\n`;
+  dockerComposeContent += `        ipv4_address: ${node.address}\n`;
   dockerComposeContent += `    volumes:\n`;
   dockerComposeContent += `      - type: bind\n`;
   dockerComposeContent += `        source: ./src/configurations/requests/${node.name}.json\n`;
   dockerComposeContent += `        target: /home/trab-1-prog-distr/build/configurations/requests/${node.name}.json\n`;
   dockerComposeContent += "    build: .\n";
-  dockerComposeContent += `    entrypoint: npm run as-peer-node -- "${node.name}" "${node.port}" "${node.resources_directory}"\n`;
+  dockerComposeContent += `    entrypoint: npm run as-peer-node -- "${node.name}"\n`;
 }
 
 try {

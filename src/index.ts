@@ -1,4 +1,5 @@
 import superNodesConfiguration from "./configurations/nodes/super-nodes.json";
+import peerNodesConfiguration from "./configurations/nodes/peer-nodes.json";
 
 import Node from "./core/Node";
 import System from "./core/System";
@@ -37,19 +38,18 @@ if (operationMode.toLowerCase() === "super-node") {
   /*
     Peer node.
   */
-  const nodePort = parseInt(process.argv[4]);
-  const resourcesDirectory = process.argv[5];
-  if (!nodePort || !resourcesDirectory) {
-    console.log(
-      "Usage: npx tsc && node build/index.js peer-node <node-name> <node-port> <resources-directory>"
-    );
+  const nodeInfo = peerNodesConfiguration.nodes.find(
+    (node) => node.name === nodeName
+  );
+  if (!nodeInfo) {
+    console.log(`[${RED}Error${RESET}] Invalid peer node name.`);
     process.exit(1);
   }
   applicationNode = new PeerNode(
     nodeName,
-    "127.0.0.1",
-    nodePort,
-    resourcesDirectory
+    nodeInfo.address,
+    nodeInfo.port,
+    nodeInfo.resources_directory
   );
 } else {
   /*
