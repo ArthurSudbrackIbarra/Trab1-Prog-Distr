@@ -29,14 +29,17 @@ export interface ResourceTransferMessage extends Message {
   peerNodePort: number;
   resource: Resource;
 }
-export interface ResourceRequestMessage extends Message, ResourceRequest {
+export interface ResourceRequestMessage extends Message {
   type: "resourceRequest";
   peerNodeName: string;
   peerNodePort: number;
+  resourceNames: string[];
 }
 export interface ResourceResponseMessage extends Message {
   type: "resourceResponse";
+  superNodeName: string;
   peerNodeName: string;
   peerNodeAddress: string;
   peerNodePort: number;
+  resourceName: string;
 }

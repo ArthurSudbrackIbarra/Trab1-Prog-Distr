@@ -5,6 +5,7 @@ import {
   RegisterMessage,
   RegisterResponseMessage,
   ResourceRequestMessage,
+  ResourceResponseMessage,
 } from "../messages/messages";
 import Node from "./Node";
 import SuperNode from "./SuperNode";
@@ -75,43 +76,11 @@ export default class PeerNode extends Node {
           peerNodePort: this.getPort(),
           resources: this.readResourcesDirectory(),
         };
-        await this.sendMessageToSuperNode(message, superNode);
+        await this.sendMessageToNode(message, superNode);
         resolve(superNode);
       } catch (error) {
         reject(error);
       }
-    });
-  }
-
-  private sendMessageToSuperNode(
-    message: Message,
-    superNode: SuperNode | null
-  ): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (!superNode) {
-        reject("The super node is null.");
-        return;
-      }
-      let address = superNode.getAddress();
-      if (address === "localhost" || address === "127.0.0.1") {
-        address = "host.docker.internal";
-      }
-      const jsonMessage = JSON.stringify(message);
-      console.log(
-        `Sending message '${jsonMessage}' to ${address}:${superNode.getPort()}`
-      );
-      this.getSocket().send(
-        Buffer.from(jsonMessage),
-        superNode.getPort(),
-        address,
-        (error) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve();
-          }
-        }
-      );
     });
   }
 
@@ -130,7 +99,7 @@ export default class PeerNode extends Node {
   }
 
   private startListening(): void {
-    this.getSocket().on("message", (message, remote) => {
+    this.getSocket().on("message", async (message, remote) => {
       console.log(
         `Received message '${message}' from ${remote.address}:${remote.port}`
       );
@@ -161,6 +130,37 @@ export default class PeerNode extends Node {
             }
           }
           break;
+        case "resourceRequest":
+          {
+            // IMPLEMENT...
+          }
+          break;
+        case "resourceResponse": {
+          const resourceResponseMessage =
+            decodedMessage as ResourceResponseMessage;
+          console.log(
+            `Received resource response. Super node '${resourceResponseMessage.superNodeName}' pointed to peer node '${resourceResponseMessage.peerNodeName}'.`
+          );
+          const ownerPeerNode = new PeerNode(
+            resourceResponseMessage.peerNodeName,
+            resourceResponseMessage.peerNodeAddress,
+            resourceResponseMessage.peerNodePort
+          );
+          const resourceRequestMessage: ResourceRequestMessage = {
+            type: "resourceRequest",
+            peerNodeName: this.getName(),
+            peerNodePort: this.getPort(),
+            resourceNames: [resourceResponseMessage.resourceName],
+          };
+          try {
+            await this.sendMessageToNode(resourceRequestMessage, ownerPeerNode);
+          } catch (error) {
+            console.error(
+              `Error sending resource request message to peer node '${ownerPeerNode.getName()}'.`
+            );
+          }
+          break;
+        }
       }
     });
   }
@@ -175,7 +175,7 @@ export default class PeerNode extends Node {
         peerNodeName: this.getName(),
       };
       try {
-        await this.sendMessageToSuperNode(keepAliveMessage, this.superNode);
+        await this.sendMessageToNode(keepAliveMessage, this.superNode);
       } catch (error) {
         console.error(
           `Error sending keep alive message to super node ${this.superNode.getName()}.`
@@ -220,7 +220,7 @@ export default class PeerNode extends Node {
         if (!this.superNode) {
           return;
         }
-        this.sendMessageToSuperNode(resourceRequestMessage, this.superNode);
+        this.sendMessageToNode(resourceRequestMessage, this.superNode);
       }
     }, 5000);
   }

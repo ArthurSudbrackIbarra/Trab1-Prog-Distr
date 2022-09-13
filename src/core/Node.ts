@@ -1,4 +1,5 @@
 import dgram from "dgram";
+import { Message } from "../messages/messages";
 
 export default abstract class Node {
   private name: string;
@@ -27,6 +28,31 @@ export default abstract class Node {
   }
   public bindSocket(): void {
     this.socket.bind(this.port);
+  }
+
+  protected sendMessageToNode(message: Message, node: Node): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const jsonMessage = JSON.stringify(message);
+      let address = node.getAddress();
+      if (address === "localhost" || address === "127.0.0.1") {
+        address = "host.docker.internal";
+      }
+      console.log(
+        `Sending message '${jsonMessage}' to ${address}:${node.getPort()}`
+      );
+      this.getSocket().send(
+        Buffer.from(jsonMessage),
+        node.getPort(),
+        address,
+        (error) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve();
+          }
+        }
+      );
+    });
   }
 
   public abstract toString(): string;

@@ -53,31 +53,6 @@ export default class SuperNode extends Node {
     this.checkDeadPeerNodesRoutine();
   }
 
-  private sendMessageToNode(message: Message, node: Node): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const jsonMessage = JSON.stringify(message);
-      let address = node.getAddress();
-      if (address === "localhost" || address === "127.0.0.1") {
-        address = "host.docker.internal";
-      }
-      console.log(
-        `Sending message '${jsonMessage}' to ${address}:${node.getPort()}`
-      );
-      this.getSocket().send(
-        Buffer.from(jsonMessage),
-        node.getPort(),
-        address,
-        (error) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve();
-          }
-        }
-      );
-    });
-  }
-
   private startListening(): void {
     this.getSocket().on("message", async (message, remote) => {
       console.log(
@@ -153,9 +128,11 @@ export default class SuperNode extends Node {
                 );
                 const resourceResponseMessage: ResourceResponseMessage = {
                   type: "resourceResponse",
+                  superNodeName: this.getName(),
                   peerNodeName: peerNode.getName(),
                   peerNodeAddress: peerNode.getAddress(),
                   peerNodePort: peerNode.getPort(),
+                  resourceName: resourceName,
                 };
                 const peerNodeToSend = new PeerNode(
                   resourceRequestMessage.peerNodeName,
@@ -178,6 +155,7 @@ export default class SuperNode extends Node {
                 console.log(
                   `Requested resource '${resourceName}' ${YELLOW}does not belong to me${RESET}.`
                 );
+                // Ask other supernodes if they have the resource.
               }
             }
           }
