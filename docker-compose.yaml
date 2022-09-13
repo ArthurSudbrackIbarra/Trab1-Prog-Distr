@@ -1,52 +1,28 @@
 version: "3.9"
+networks:
+  nodes_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.24.2.0/16
 services:
   # Super nodes.
   super-node-1:
+    networks:
+      nodes_network:
+        ipv4_address: 172.24.2.1
     container_name: super-node-1
-    ports:
-      - 8000:8000/udp
     build: .
     entrypoint: npm run as-super-node -- "super-node-1"
-  super-node-2:
-    container_name: super-node-2
-    ports:
-      - 8001:8001/udp
-    build: .
-    entrypoint: npm run as-super-node -- "super-node-2"
-  super-node-3:
-    container_name: super-node-3
-    ports:
-      - 8002:8002/udp
-    build: .
-    entrypoint: npm run as-super-node -- "super-node-3"
   # Peer Nodes.
   peer-node-1:
+    networks:
+      nodes_network:
     container_name: peer-node-1
-    ports:
-      - 9000:9000/udp
     build: .
     volumes:
       - type: bind
         source: ./src/configurations/requests/peer-node-1.json
         target: /home/trab-1-prog-distr/build/configurations/requests/peer-node-1.json
     entrypoint: npm run as-peer-node -- "peer-node-1" "9000" "books-1"
-  peer-node-2:
-    container_name: peer-node-2
-    ports:
-      - 9001:9001/udp
-    build: .
-    volumes:
-      - type: bind
-        source: ./src/configurations/requests/peer-node-2.json
-        target: /home/trab-1-prog-distr/build/configurations/requests/peer-node-2.json
-    entrypoint: npm run as-peer-node -- "peer-node-2" "9001" "books-2"
-  peer-node-3:
-    container_name: peer-node-3
-    ports:
-      - 9002:9002/udp
-    build: .
-    volumes:
-      - type: bind
-        source: ./src/configurations/requests/peer-node-3.json
-        target: /home/trab-1-prog-distr/build/configurations/requests/peer-node-3.json
-    entrypoint: npm run as-peer-node -- "peer-node-3" "9002" "books-3"

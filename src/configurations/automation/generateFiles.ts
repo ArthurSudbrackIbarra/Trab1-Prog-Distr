@@ -13,17 +13,23 @@ const DOCKER_COMPOSE_FILE_PATH = "docker-compose.yaml";
 
 let dockerComposeContent = "";
 dockerComposeContent += 'version: "3.9"\n';
+dockerComposeContent += `networks:
+  nodes_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.24.2.0/16
+`;
 dockerComposeContent += "services:\n";
 dockerComposeContent += "  # Super nodes.\n";
 
 for (const node of superNodesConfiguration.nodes) {
-  if (!["127.0.0.1", "localhost"].includes(node.address.toLowerCase())) {
-    continue;
-  }
   dockerComposeContent += `  ${node.name}:\n`;
+  dockerComposeContent += `    networks:\n`;
+  dockerComposeContent += `      nodes_network:\n`;
+  dockerComposeContent += `        ipv4_address: ${node.address}\n`;
   dockerComposeContent += `    container_name: ${node.name}\n`;
-  dockerComposeContent += "    ports:\n";
-  dockerComposeContent += `      - ${node.port}:${node.port}/udp\n`;
   dockerComposeContent += "    build: .\n";
   dockerComposeContent += `    entrypoint: npm run as-super-node -- "${node.name}"\n`;
 }
@@ -31,9 +37,9 @@ for (const node of superNodesConfiguration.nodes) {
 dockerComposeContent += "  # Peer Nodes.\n";
 for (const node of peerNodesConfiguration.nodes) {
   dockerComposeContent += `  ${node.name}:\n`;
+  dockerComposeContent += `    networks:\n`;
+  dockerComposeContent += `      nodes_network:\n`;
   dockerComposeContent += `    container_name: ${node.name}\n`;
-  dockerComposeContent += "    ports:\n";
-  dockerComposeContent += `      - ${node.port}:${node.port}/udp\n`;
   dockerComposeContent += "    build: .\n";
   dockerComposeContent += `    volumes:\n`;
   dockerComposeContent += `      - type: bind\n`;

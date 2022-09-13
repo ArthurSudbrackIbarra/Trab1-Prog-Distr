@@ -2,18 +2,8 @@
     "nodes": [
         {
             "name": "super-node-1",
-            "address": "127.0.0.1",
+            "address": "172.24.2.1",
             "port": 8000
-        },
-        {
-            "name": "super-node-2",
-            "address": "127.0.0.1",
-            "port": 8001
-        },
-        {
-            "name": "super-node-3",
-            "address": "127.0.0.1",
-            "port": 8002
         }
     ]
 }
