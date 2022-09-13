@@ -4,7 +4,7 @@
   "description": "Trabalho 1 de Programação Distribuída.",
   "main": "build/index.js",
   "scripts": {
-    "copy-non-ts-files": "cp -r src/configurations/requests build/configurations/requests",
+    "copy-non-ts-files": "cp -r src/configurations/requests build/configurations/requests && cp -r src/resources build/resources",
     "as-super-node": "npx tsc && npm run copy-non-ts-files && node build/index.js super-node",
     "as-peer-node": "npx tsc && npm run copy-non-ts-files && node build/index.js peer-node",
     "generate-files": "npx tsc && node build/configurations/automation/generateFiles.js",

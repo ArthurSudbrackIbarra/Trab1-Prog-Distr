@@ -1,6 +1,7 @@
-interface Resource {
-  name: string;
+export interface Resource {
+  fileName: string;
+  contentHash: string;
 }
-export interface Resources {
+export interface ResourceRequest {
   requests: Resource[];
 }

@@ -9,9 +9,9 @@ import Node from "./Node";
 import SuperNode from "./SuperNode";
 import System from "./System";
 import { wait } from "../utils/time";
-import { Resources } from "../resources/resources";
 import { RED, RESET, YELLOW } from "../utils/colors";
 import path from "path";
+import { ResourceRequest } from "../resources/resources";
 
 export default class PeerNode extends Node {
   /*
@@ -27,7 +27,7 @@ export default class PeerNode extends Node {
     name: string,
     address: string,
     port: number,
-    resourcesDirectory: string
+    resourcesDirectory: string = ""
   ) {
     super(name, address, port);
     this.resourcesDirectory = resourcesDirectory;
@@ -69,9 +69,14 @@ export default class PeerNode extends Node {
       try {
         const message: RegisterMessage = {
           type: "register",
-          name: this.getName(),
-          port: this.getPort(),
-          content: "???",
+          peerNodeName: this.getName(),
+          peerNodePort: this.getPort(),
+          resources: [
+            {
+              fileName: "Example.txt",
+              contentHash: "12345",
+            },
+          ],
         };
         await this.sendMessageToSuperNode(message, superNode);
         resolve(superNode);
@@ -140,15 +145,17 @@ export default class PeerNode extends Node {
               decodedMessage as RegisterResponseMessage;
             if (registerResponseMessage.status === "success") {
               console.log(
-                `Successfully registered to super node '${registerResponseMessage.name}'.`
+                `Successfully registered to super node '${registerResponseMessage.superNodeName}'.`
               );
               this.superNode =
-                System.getSuperNodeByName(registerResponseMessage.name) || null;
+                System.getSuperNodeByName(
+                  registerResponseMessage.superNodeName
+                ) || null;
               this.startKeepAliveMessages();
               this.monitorRequestsFile();
             } else {
               console.error(
-                `Error registering to super node ${registerResponseMessage.name}.`
+                `Error registering to super node ${registerResponseMessage.superNodeName}.`
               );
               /*
                 Trying again.
@@ -168,7 +175,7 @@ export default class PeerNode extends Node {
       }
       const keepAliveMessage: KeepAliveMessage = {
         type: "keepAlive",
-        name: this.getName(),
+        peerNodeName: this.getName(),
       };
       try {
         await this.sendMessageToSuperNode(keepAliveMessage, this.superNode);
@@ -180,7 +187,7 @@ export default class PeerNode extends Node {
     }, 5000);
   }
 
-  private requests: Resources | null = null;
+  private requests: ResourceRequest | null = null;
   private monitorRequestsFile(): void {
     setInterval(() => {
       const filePath = path.join(
@@ -194,7 +201,7 @@ export default class PeerNode extends Node {
         return;
       }
       const fileContent = fs.readFileSync(filePath).toString();
-      const requests = JSON.parse(fileContent) as Resources;
+      const requests = JSON.parse(fileContent) as ResourceRequest;
       if (!this.requests) {
         this.requests = requests;
         return;

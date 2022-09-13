@@ -25,7 +25,7 @@ for (const node of superNodesConfiguration.nodes) {
   dockerComposeContent += "    ports:\n";
   dockerComposeContent += `      - ${node.port}:${node.port}/udp\n`;
   dockerComposeContent += "    build: .\n";
-  dockerComposeContent += `    entrypoint: npm run as-super-node "${node.name}"\n`;
+  dockerComposeContent += `    entrypoint: npm run as-super-node -- "${node.name}"\n`;
 }
 
 dockerComposeContent += "  # Peer Nodes.\n";
@@ -39,7 +39,7 @@ for (const node of peerNodesConfiguration.nodes) {
   dockerComposeContent += `      - type: bind\n`;
   dockerComposeContent += `        source: ./src/configurations/requests/${node.name}.json\n`;
   dockerComposeContent += `        target: /home/trab-1-prog-distr/build/configurations/requests/${node.name}.json\n`;
-  dockerComposeContent += `    entrypoint: npm run as-peer-node "${node.name}" "${node.port}" "${node.resources_directory}"\n`;
+  dockerComposeContent += `    entrypoint: npm run as-peer-node -- "${node.name}" "${node.port}" "${node.resources_directory}"\n`;
 }
 
 try {

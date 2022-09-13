@@ -75,14 +75,13 @@ export default class SuperNode extends Node {
           {
             const registerMessage = decodedMessage as RegisterMessage;
             const peerNode = new PeerNode(
-              registerMessage.name,
+              registerMessage.peerNodeName,
               remote.address,
-              registerMessage.port,
-              registerMessage.content
+              registerMessage.peerNodePort
             );
             const registerResponseMessage: RegisterResponseMessage = {
               type: "registerResponse",
-              name: this.getName(),
+              superNodeName: this.getName(),
               status: "success",
             };
             try {
@@ -94,7 +93,7 @@ export default class SuperNode extends Node {
               );
               return;
             }
-            this.peerNodesData.set(registerMessage.name, {
+            this.peerNodesData.set(registerMessage.peerNodeName, {
               peerNode: peerNode,
               lastKeepAliveTime: Date.now(),
             });
@@ -106,7 +105,9 @@ export default class SuperNode extends Node {
         case "keepAlive":
           {
             const keepAliveMessage = decodedMessage as KeepAliveMessage;
-            const peerNodeData = this.peerNodesData.get(keepAliveMessage.name);
+            const peerNodeData = this.peerNodesData.get(
+              keepAliveMessage.peerNodeName
+            );
             if (peerNodeData) {
               peerNodeData.lastKeepAliveTime = Date.now();
             }
