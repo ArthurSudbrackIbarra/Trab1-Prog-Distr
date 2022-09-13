@@ -1,4 +1,4 @@
-import { Resource } from "../resources/resources";
+import { Resource, ResourceRequest } from "../resources/resources";
 
 export interface Message {
   type: string;
@@ -28,4 +28,15 @@ export interface ResourceTransferMessage extends Message {
   peerNodeAddress: string;
   peerNodePort: number;
   resource: Resource;
+}
+export interface ResourceRequestMessage extends Message, ResourceRequest {
+  type: "resourceRequest";
+  peerNodeName: string;
+  peerNodePort: number;
+}
+export interface ResourceResponseMessage extends Message {
+  type: "resourceResponse";
+  peerNodeName: string;
+  peerNodeAddress: string;
+  peerNodePort: number;
 }

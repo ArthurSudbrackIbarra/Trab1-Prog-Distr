@@ -3,5 +3,5 @@ export interface Resource {
   contentHash: string;
 }
 export interface ResourceRequest {
-  requests: Resource[];
+  resourceNames: string[];
 }

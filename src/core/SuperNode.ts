@@ -3,6 +3,8 @@ import {
   Message,
   RegisterMessage,
   RegisterResponseMessage,
+  ResourceRequestMessage,
+  ResourceResponseMessage,
   ResourceTransferMessage,
 } from "../messages/messages";
 import Node from "./Node";
@@ -25,6 +27,11 @@ export default class SuperNode extends Node {
     The map of peer nodes connected to this super node (name - object).
   */
   private peerNodesData: Map<string, PeerNodeData>;
+
+  /*
+    Resources mapping (DHT). Key = resource name, value = peer node that has the resource.
+  */
+  private dht = new Map<string, PeerNode>();
 
   constructor(name: string, address: string, port: number, order: number) {
     super(name, address, port);
@@ -107,12 +114,7 @@ export default class SuperNode extends Node {
             console.log(
               `Added '${peerNode.getName()} - ${peerNode.getAddress()}:${peerNode.getPort()}' to the list of peer nodes.`
             );
-            this.handleResources(
-              registerMessage.resources,
-              registerMessage.peerNodeName,
-              remote.address,
-              registerMessage.peerNodePort
-            );
+            this.handleResources(registerMessage.resources, peerNode);
           }
           break;
         case "keepAlive":
@@ -130,12 +132,54 @@ export default class SuperNode extends Node {
           {
             const resourceTransferMessage =
               decodedMessage as ResourceTransferMessage;
-            this.handleResources(
-              [resourceTransferMessage.resource],
+            const peerNode = new PeerNode(
               resourceTransferMessage.peerNodeName,
-              resourceTransferMessage.peerNodeAddress,
+              remote.address,
               resourceTransferMessage.peerNodePort
             );
+            this.handleResources([resourceTransferMessage.resource], peerNode);
+          }
+          break;
+        case "resourceRequest":
+          {
+            const resourceRequestMessage =
+              decodedMessage as ResourceRequestMessage;
+            const resourceNames = resourceRequestMessage.resourceNames;
+            for (const resourceName of resourceNames) {
+              const peerNode = this.dht.get(resourceName);
+              if (peerNode) {
+                console.log(
+                  `Requested resource '${resourceName}' ${GREEN}belongs to me${RESET}.`
+                );
+                const resourceResponseMessage: ResourceResponseMessage = {
+                  type: "resourceResponse",
+                  peerNodeName: peerNode.getName(),
+                  peerNodeAddress: peerNode.getAddress(),
+                  peerNodePort: peerNode.getPort(),
+                };
+                const peerNodeToSend = new PeerNode(
+                  resourceRequestMessage.peerNodeName,
+                  remote.address,
+                  resourceRequestMessage.peerNodePort
+                );
+                try {
+                  await this.sendMessageToNode(
+                    resourceResponseMessage,
+                    peerNodeToSend
+                  );
+                } catch (error) {
+                  console.error(
+                    "Error sending resource response message to peer node: ",
+                    error
+                  );
+                  return;
+                }
+              } else {
+                console.log(
+                  `Requested resource '${resourceName}' ${YELLOW}does not belong to me${RESET}.`
+                );
+              }
+            }
           }
           break;
       }
@@ -158,9 +202,7 @@ export default class SuperNode extends Node {
 
   private async handleResources(
     resources: Resource[],
-    peerNodeName: string,
-    peerNodeAddress: string,
-    peerNodePort: number
+    peerNode: PeerNode
   ): Promise<void> {
     for (const resource of resources) {
       const contentHashAsNumber = parseInt(resource.contentHash, 16);
@@ -168,19 +210,19 @@ export default class SuperNode extends Node {
       const partition = contentHashAsNumber % partitionsNumber;
       if (partition === this.order) {
         console.log(
-          `Resource '${resource.fileName}' will be ${GREEN}managed by me${RESET}.`
+          `Resource '${resource.fileName}' ${GREEN}belongs to my hash range${RESET}.`
         );
-        // Continue...
+        this.dht.set(resource.fileName, peerNode);
       } else {
         console.log(
-          `Resource '${resource.fileName}' will ${YELLOW}NOT be managed by me${RESET}.`
+          `Resource '${resource.fileName}' ${YELLOW}does not belong to my hash range${RESET}.`
         );
         const resourceTransferMessage: ResourceTransferMessage = {
           type: "resourceTransfer",
           superNodeName: this.getName(),
-          peerNodeName: peerNodeName,
-          peerNodeAddress: peerNodeAddress,
-          peerNodePort: peerNodePort,
+          peerNodeName: peerNode.getName(),
+          peerNodeAddress: peerNode.getAddress(),
+          peerNodePort: peerNode.getPort(),
           resource: resource,
         };
         const nextSuperNode = System.getNextSuperNode(this.order);

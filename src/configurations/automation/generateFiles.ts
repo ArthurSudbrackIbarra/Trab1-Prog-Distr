@@ -70,11 +70,7 @@ fs.readdirSync(REQUESTS_DIRECTORY_PATH).forEach((file) => {
   fs.unlinkSync(`${REQUESTS_DIRECTORY_PATH}/${file}`);
 });
 const defaultContent = {
-  requests: [
-    {
-      fileName: "example-name.txt",
-    },
-  ],
+  resourceNames: ["example.txt"],
 };
 for (const node of peerNodesConfiguration.nodes) {
   const fileName = `${node.name}.json`;

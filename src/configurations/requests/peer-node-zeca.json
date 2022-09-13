@@ -1,7 +1,5 @@
 {
-  "requests": [
-    {
-      "fileName": "example-name.txt"
-    }
+  "resourceNames": [
+    "examples.txt"
   ]
 }

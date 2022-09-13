@@ -4,6 +4,7 @@ import {
   Message,
   RegisterMessage,
   RegisterResponseMessage,
+  ResourceRequestMessage,
 } from "../messages/messages";
 import Node from "./Node";
 import SuperNode from "./SuperNode";
@@ -183,7 +184,7 @@ export default class PeerNode extends Node {
     }, 5000);
   }
 
-  private requests: ResourceRequest | null = null;
+  private resourceRequest: ResourceRequest | null = null;
   private monitorRequestsFile(): void {
     setInterval(() => {
       const filePath = path.join(
@@ -197,16 +198,29 @@ export default class PeerNode extends Node {
         return;
       }
       const fileContent = fs.readFileSync(filePath).toString();
-      const requests = JSON.parse(fileContent) as ResourceRequest;
-      if (!this.requests) {
-        this.requests = requests;
+      const resourceRequests = JSON.parse(fileContent) as ResourceRequest;
+      if (!this.resourceRequest) {
+        this.resourceRequest = resourceRequests;
         return;
       }
-      if (JSON.stringify(this.requests) === JSON.stringify(requests)) {
+      if (
+        JSON.stringify(this.resourceRequest) ===
+        JSON.stringify(resourceRequests)
+      ) {
         return;
       } else {
         console.log(`${YELLOW}Detected changes on file ${filePath}.${RESET}`);
-        this.requests = requests;
+        this.resourceRequest = resourceRequests;
+        const resourceRequestMessage: ResourceRequestMessage = {
+          type: "resourceRequest",
+          peerNodeName: this.getName(),
+          peerNodePort: this.getPort(),
+          resourceNames: this.resourceRequest.resourceNames,
+        };
+        if (!this.superNode) {
+          return;
+        }
+        this.sendMessageToSuperNode(resourceRequestMessage, this.superNode);
       }
     }, 5000);
   }
