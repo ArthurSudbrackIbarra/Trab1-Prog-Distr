@@ -3,6 +3,7 @@ import {
   Message,
   RegisterMessage,
   RegisterResponseMessage,
+  ResourceTransferMessage,
 } from "../messages/messages";
 import Node from "./Node";
 import PeerNode from "./PeerNode";
@@ -47,13 +48,17 @@ export default class SuperNode extends Node {
   private sendMessageToNode(message: Message, node: Node): Promise<void> {
     return new Promise((resolve, reject) => {
       const jsonMessage = JSON.stringify(message);
+      let address = node.getAddress();
+      if (address === "localhost" || address === "127.0.0.1") {
+        address = "host.docker.internal";
+      }
       console.log(
-        `Sending message '${jsonMessage}' to ${node.getAddress()}:${node.getPort()}`
+        `Sending message '${jsonMessage}' to ${address}:${node.getPort()}`
       );
       this.getSocket().send(
         Buffer.from(jsonMessage),
         node.getPort(),
-        node.getAddress(),
+        address,
         (error) => {
           if (error) {
             reject(error);
@@ -105,15 +110,40 @@ export default class SuperNode extends Node {
               const contentHashAsNumber = parseInt(resource.contentHash, 16);
               const partitionsNumber = System.getPartitionsNumber();
               const partition = contentHashAsNumber % partitionsNumber;
-              console.log(`Partition number: ${partition}`);
               if (partition === this.order) {
                 console.log(
-                  `Resource '${resource.fileName}' will be stored in this supernode.`
+                  `Resource '${resource.fileName}' will be managed by this supernode.`
                 );
+                // Continue...
               } else {
                 console.log(
-                  `Resource '${resource.fileName}' will NOT be stored in this supernode.`
+                  `Resource '${resource.fileName}' will NOT be managed by this supernode.`
                 );
+                const resourceTransferMessage: ResourceTransferMessage = {
+                  type: "resourceTransfer",
+                  superNodeName: this.getName(),
+                  peerNodeName: registerMessage.peerNodeName,
+                  peerNodeAddress: remote.address,
+                  peerNodePort: registerMessage.peerNodePort,
+                  resource: resource,
+                };
+                const nextSuperNode = System.getNextSuperNode(this.order);
+                if (!nextSuperNode) {
+                  console.error("Could not find next super node in the ring.");
+                  return;
+                }
+                try {
+                  await this.sendMessageToNode(
+                    resourceTransferMessage,
+                    nextSuperNode
+                  );
+                } catch (error) {
+                  console.error(
+                    "Error sending resource transfer message: ",
+                    error
+                  );
+                  return;
+                }
               }
             }
           }

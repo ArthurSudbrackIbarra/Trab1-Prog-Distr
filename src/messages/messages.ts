@@ -10,7 +10,6 @@ export interface RegisterMessage extends Message {
   peerNodePort: number;
   resources: Resource[];
 }
-
 export interface RegisterResponseMessage extends Message {
   type: "registerResponse";
   superNodeName: string;
@@ -20,4 +19,13 @@ export interface RegisterResponseMessage extends Message {
 export interface KeepAliveMessage extends Message {
   type: "keepAlive";
   peerNodeName: string;
+}
+
+export interface ResourceTransferMessage extends Message {
+  type: "resourceTransfer";
+  superNodeName: string;
+  peerNodeName: string;
+  peerNodeAddress: string;
+  peerNodePort: number;
+  resource: Resource;
 }
