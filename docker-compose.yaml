@@ -8,21 +8,55 @@ networks:
         - subnet: 172.24.2.0/16
 services:
   # Super nodes.
-  super-node-1:
-    container_name: super-node-1
+  super-node-arthur:
+    container_name: super-node-arthur
     networks:
       nodes_network:
         ipv4_address: 172.24.2.1
     build: .
-    entrypoint: npm run as-super-node -- "super-node-1"
+    entrypoint: npm run as-super-node -- "super-node-arthur"
+  super-node-luiz:
+    container_name: super-node-luiz
+    networks:
+      nodes_network:
+        ipv4_address: 172.24.2.2
+    build: .
+    entrypoint: npm run as-super-node -- "super-node-luiz"
+  super-node-willian:
+    container_name: super-node-willian
+    networks:
+      nodes_network:
+        ipv4_address: 172.24.2.3
+    build: .
+    entrypoint: npm run as-super-node -- "super-node-willian"
   # Peer Nodes.
-  peer-node-1:
-    container_name: peer-node-1
+  peer-node-zeca:
+    container_name: peer-node-zeca
     networks:
       nodes_network:
     volumes:
       - type: bind
-        source: ./src/configurations/requests/peer-node-1.json
-        target: /home/trab-1-prog-distr/build/configurations/requests/peer-node-1.json
+        source: ./src/configurations/requests/peer-node-zeca.json
+        target: /home/trab-1-prog-distr/build/configurations/requests/peer-node-zeca.json
     build: .
-    entrypoint: npm run as-peer-node -- "peer-node-1" "9000" "books-1"
+    entrypoint: npm run as-peer-node -- "peer-node-zeca" "9000" "books-1"
+  peer-node-maria:
+    container_name: peer-node-maria
+    networks:
+      nodes_network:
+    volumes:
+      - type: bind
+        source: ./src/configurations/requests/peer-node-maria.json
+        target: /home/trab-1-prog-distr/build/configurations/requests/peer-node-maria.json
+    build: .
+    entrypoint: npm run as-peer-node -- "peer-node-maria" "9001" "books-2"
+  peer-node-john:
+    container_name: peer-node-john
+    networks:
+      nodes_network:
+    volumes:
+      - type: bind
+        source: ./src/configurations/requests/peer-node-john.json
+        target: /home/trab-1-prog-distr/build/configurations/requests/peer-node-john.json
+    build: .
+    entrypoint: npm run as-peer-node -- "peer-node-john" "9002" "books-3"

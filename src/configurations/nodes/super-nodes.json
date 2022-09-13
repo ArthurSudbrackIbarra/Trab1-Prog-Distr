@@ -1,9 +1,19 @@
 {
     "nodes": [
         {
-            "name": "super-node-1",
+            "name": "super-node-arthur",
             "address": "172.24.2.1",
             "port": 8000
+        },
+        {
+            "name": "super-node-luiz",
+            "address": "172.24.2.2",
+            "port": 8001
+        },
+        {
+            "name": "super-node-willian",
+            "address": "172.24.2.3",
+            "port": 8002
         }
     ]
 }

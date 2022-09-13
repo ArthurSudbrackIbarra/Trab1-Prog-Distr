@@ -1,9 +1,19 @@
 {
     "nodes": [
         {
-            "name": "peer-node-1",
+            "name": "peer-node-zeca",
             "port": 9000,
             "resources_directory": "books-1"
+        },
+        {
+            "name": "peer-node-maria",
+            "port": 9001,
+            "resources_directory": "books-2"
+        },
+        {
+            "name": "peer-node-john",
+            "port": 9002,
+            "resources_directory": "books-3"
         }
     ]
 }

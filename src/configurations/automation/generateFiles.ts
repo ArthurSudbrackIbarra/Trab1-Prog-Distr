@@ -71,7 +71,7 @@ fs.readdirSync(REQUESTS_DIRECTORY_PATH).forEach((file) => {
 const defaultContent = {
   requests: [
     {
-      name: "example-name",
+      fileName: "example-name.txt",
     },
   ],
 };
