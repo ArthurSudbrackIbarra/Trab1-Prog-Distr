@@ -26,10 +26,10 @@ dockerComposeContent += "  # Super nodes.\n";
 
 for (const node of superNodesConfiguration.nodes) {
   dockerComposeContent += `  ${node.name}:\n`;
+  dockerComposeContent += `    container_name: ${node.name}\n`;
   dockerComposeContent += `    networks:\n`;
   dockerComposeContent += `      nodes_network:\n`;
   dockerComposeContent += `        ipv4_address: ${node.address}\n`;
-  dockerComposeContent += `    container_name: ${node.name}\n`;
   dockerComposeContent += "    build: .\n";
   dockerComposeContent += `    entrypoint: npm run as-super-node -- "${node.name}"\n`;
 }
@@ -37,14 +37,14 @@ for (const node of superNodesConfiguration.nodes) {
 dockerComposeContent += "  # Peer Nodes.\n";
 for (const node of peerNodesConfiguration.nodes) {
   dockerComposeContent += `  ${node.name}:\n`;
+  dockerComposeContent += `    container_name: ${node.name}\n`;
   dockerComposeContent += `    networks:\n`;
   dockerComposeContent += `      nodes_network:\n`;
-  dockerComposeContent += `    container_name: ${node.name}\n`;
-  dockerComposeContent += "    build: .\n";
   dockerComposeContent += `    volumes:\n`;
   dockerComposeContent += `      - type: bind\n`;
   dockerComposeContent += `        source: ./src/configurations/requests/${node.name}.json\n`;
   dockerComposeContent += `        target: /home/trab-1-prog-distr/build/configurations/requests/${node.name}.json\n`;
+  dockerComposeContent += "    build: .\n";
   dockerComposeContent += `    entrypoint: npm run as-peer-node -- "${node.name}" "${node.port}" "${node.resources_directory}"\n`;
 }
 

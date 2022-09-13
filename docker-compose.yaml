@@ -9,20 +9,20 @@ networks:
 services:
   # Super nodes.
   super-node-1:
+    container_name: super-node-1
     networks:
       nodes_network:
         ipv4_address: 172.24.2.1
-    container_name: super-node-1
     build: .
     entrypoint: npm run as-super-node -- "super-node-1"
   # Peer Nodes.
   peer-node-1:
+    container_name: peer-node-1
     networks:
       nodes_network:
-    container_name: peer-node-1
-    build: .
     volumes:
       - type: bind
         source: ./src/configurations/requests/peer-node-1.json
         target: /home/trab-1-prog-distr/build/configurations/requests/peer-node-1.json
+    build: .
     entrypoint: npm run as-peer-node -- "peer-node-1" "9000" "books-1"
