@@ -198,6 +198,14 @@ export default class PeerNode extends Node {
           }
           break;
         }
+        case "resource":
+          {
+            const resourceMessage = decodedMessage as ResourceMessage;
+            console.log(
+              `I got the resource '${resourceMessage.content}' from the peer node '${resourceMessage.peerNodeName}'.`
+            );
+          }
+          break;
       }
     });
   }
