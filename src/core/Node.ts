@@ -40,7 +40,7 @@ export default abstract class Node {
       console.log(
         `Sending message '${jsonMessage}' to ${address}:${node.getPort()}`
       );
-      this.getSocket().send(
+      this.socket.send(
         Buffer.from(jsonMessage),
         node.getPort(),
         address,
