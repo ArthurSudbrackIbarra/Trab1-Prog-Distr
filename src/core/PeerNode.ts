@@ -104,7 +104,7 @@ export default class PeerNode extends Node {
       console.log(
         `Received message '${message}' from ${remote.address}:${remote.port}`
       );
-      const decodedMessage = JSON.parse(message.toString());
+      const decodedMessage = JSON.parse(message.toString()) as Message;
       switch (decodedMessage.type) {
         case "registerResponse":
           {

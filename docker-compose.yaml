@@ -15,20 +15,6 @@ services:
         ipv4_address: 172.24.2.1
     build: .
     entrypoint: npm run as-super-node -- "super-node-arthur"
-  super-node-luiz:
-    container_name: super-node-luiz
-    networks:
-      nodes_network:
-        ipv4_address: 172.24.2.2
-    build: .
-    entrypoint: npm run as-super-node -- "super-node-luiz"
-  super-node-willian:
-    container_name: super-node-willian
-    networks:
-      nodes_network:
-        ipv4_address: 172.24.2.3
-    build: .
-    entrypoint: npm run as-super-node -- "super-node-willian"
   # Peer Nodes.
   peer-node-zeca:
     container_name: peer-node-zeca

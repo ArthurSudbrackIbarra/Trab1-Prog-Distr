@@ -1,4 +1,4 @@
-import { Resource, ResourceRequest } from "../resources/resources";
+import { Resource } from "../resources/resources";
 
 export interface Message {
   type: string;
