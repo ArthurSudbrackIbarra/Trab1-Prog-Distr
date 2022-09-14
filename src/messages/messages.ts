@@ -43,3 +43,8 @@ export interface ResourceResponseMessage extends Message {
   peerNodePort: number;
   resourceName: string;
 }
+export interface ResourceMessage extends Message {
+  type: "resource";
+  peerNodeName: string;
+  content: string;
+}

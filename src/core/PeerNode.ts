@@ -4,6 +4,7 @@ import {
   Message,
   RegisterMessage,
   RegisterResponseMessage,
+  ResourceMessage,
   ResourceRequestMessage,
   ResourceResponseMessage,
 } from "../messages/messages";
@@ -132,7 +133,43 @@ export default class PeerNode extends Node {
           break;
         case "resourceRequest":
           {
-            // IMPLEMENT...
+            const resourceRequestMessage =
+              decodedMessage as ResourceRequestMessage;
+            const resourceName = resourceRequestMessage.resourceNames[0];
+            if (!resourceName) {
+              console.log("No resource requested.");
+              return;
+            }
+            const resourcePath = path.join(
+              __dirname,
+              "../resources",
+              this.resourcesDirectory,
+              resourceName
+            );
+            if (!fs.existsSync(resourcePath)) {
+              console.log(
+                `Resource '${resourceName}' ${RED}does not exist${RESET}.`
+              );
+              return;
+            }
+            const content = fs.readFileSync(resourcePath);
+            const resourceMessage: ResourceMessage = {
+              type: "resource",
+              peerNodeName: this.getName(),
+              content: content.toString(),
+            };
+            const peerNodeToSend = new PeerNode(
+              resourceRequestMessage.peerNodeName,
+              remote.address,
+              resourceRequestMessage.peerNodePort
+            );
+            try {
+              await this.sendMessageToNode(resourceMessage, peerNodeToSend);
+            } catch (error) {
+              console.error(
+                `Error sending resource message to peer node ${peerNodeToSend.getName()}.`
+              );
+            }
           }
           break;
         case "resourceResponse": {
