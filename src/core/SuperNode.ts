@@ -236,6 +236,10 @@ export default class SuperNode extends Node {
                 return;
               }
             } else {
+              const nextSuperNode = System.getNextSuperNode(this.order);
+              if (!nextSuperNode) {
+                return;
+              }
               const peerNode = this.dht.get(resourceSearchMessage.resourceName);
               if (peerNode) {
                 console.log(
@@ -254,14 +258,10 @@ export default class SuperNode extends Node {
                   originalPeerNodePort: resourceSearchMessage.peerNodePort,
                   resourceName: resourceSearchMessage.resourceName,
                 };
-                const superNodeToSend = System.getNextSuperNode(this.order);
-                if (!superNodeToSend) {
-                  return;
-                }
                 try {
                   await this.sendMessageToNode(
                     resourceResponseMessage,
-                    superNodeToSend
+                    nextSuperNode
                   );
                 } catch (error) {
                   console.error(
@@ -271,6 +271,27 @@ export default class SuperNode extends Node {
                   return;
                 }
               } else {
+                const newResourceSearchMessage: ResourceSearchMessage = {
+                  type: "resourceSearch",
+                  id: resourceSearchMessage.id,
+                  superNodeName: this.getName(),
+                  peerNodeName: resourceSearchMessage.peerNodeName,
+                  peerNodeAddress: resourceSearchMessage.peerNodeAddress,
+                  peerNodePort: resourceSearchMessage.peerNodePort,
+                  resourceName: resourceSearchMessage.resourceName,
+                };
+                try {
+                  await this.sendMessageToNode(
+                    newResourceSearchMessage,
+                    nextSuperNode
+                  );
+                } catch (error) {
+                  console.error(
+                    "Error sending resource search message to next super node: ",
+                    error
+                  );
+                  return;
+                }
               }
             }
           }
