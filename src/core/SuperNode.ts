@@ -117,7 +117,7 @@ export default class SuperNode extends Node {
               decodedMessage as ResourceTransferMessage;
             const peerNode = new PeerNode(
               resourceTransferMessage.peerNodeName,
-              remote.address,
+              resourceTransferMessage.peerNodeAddress,
               resourceTransferMessage.peerNodePort
             );
             this.handleResources([resourceTransferMessage.resource], peerNode);
