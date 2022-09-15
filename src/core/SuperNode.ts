@@ -173,9 +173,6 @@ export default class SuperNode extends Node {
                   type: "resourceSearch",
                   id: uniqueID,
                   superNodeName: this.getName(),
-                  peerNodeName: resourceRequestMessage.peerNodeName,
-                  peerNodeAddress: remote.address,
-                  peerNodePort: resourceRequestMessage.peerNodePort,
                   resourceName: resourceName,
                 };
                 try {
@@ -274,6 +271,9 @@ export default class SuperNode extends Node {
             if (
               this.pendingResourceRequestsData.get(resourceSearchMessage.id)
             ) {
+              console.log(
+                `My resource request with id '${resourceSearchMessage.id}' ${YELLOW}completed a cycle in the ring and was not found${RESET}. Telling my peer node...`
+              );
               const resourceResponseMessage: ResourceResponseMessage = {
                 type: "resourceResponse",
                 superNodeName: this.getName(),
@@ -285,6 +285,7 @@ export default class SuperNode extends Node {
               const peerNodeToSend = this.pendingResourceRequestsData.get(
                 resourceSearchMessage.id
               );
+              this.pendingResourceRequestsData.delete(resourceSearchMessage.id);
               if (!peerNodeToSend) {
                 return;
               }
@@ -341,9 +342,6 @@ export default class SuperNode extends Node {
                   type: "resourceSearch",
                   id: resourceSearchMessage.id,
                   superNodeName: this.getName(),
-                  peerNodeName: resourceSearchMessage.peerNodeName,
-                  peerNodeAddress: resourceSearchMessage.peerNodeAddress,
-                  peerNodePort: resourceSearchMessage.peerNodePort,
                   resourceName: resourceSearchMessage.resourceName,
                 };
                 try {

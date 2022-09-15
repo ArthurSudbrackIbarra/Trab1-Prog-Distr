@@ -39,9 +39,6 @@ export interface ResourceSearchMessage extends Message {
   type: "resourceSearch";
   id: string;
   superNodeName: string;
-  peerNodeName: string;
-  peerNodeAddress: string;
-  peerNodePort: number;
   resourceName: string;
 }
 export interface ResourceResponseMessage extends Message {
