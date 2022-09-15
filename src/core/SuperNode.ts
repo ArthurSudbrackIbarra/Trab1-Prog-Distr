@@ -196,6 +196,10 @@ export default class SuperNode extends Node {
           break;
         case "resourceResponse":
           {
+            // if I have the message id in my pending resource requests, then i am the one who requested the resource
+            // and received the response from the super node that manages the resource.
+            // if I don't have the message id in my pending resource requests, then I should forward the response to the
+            // next super node in the system.
           }
           break;
         case "resourceSearch":
@@ -232,7 +236,42 @@ export default class SuperNode extends Node {
                 return;
               }
             } else {
-              // check if i have the resource
+              const peerNode = this.dht.get(resourceSearchMessage.resourceName);
+              if (peerNode) {
+                console.log(
+                  `Requested resource '${resourceSearchMessage.resourceName}' ${GREEN}belongs to me${RESET}.`
+                );
+                const resourceResponseMessage: ResourceResponseMessage = {
+                  type: "resourceResponse",
+                  id: resourceSearchMessage.id,
+                  superNodeName: this.getName(),
+                  peerNodeName: peerNode.getName(),
+                  peerNodeAddress: peerNode.getAddress(),
+                  peerNodePort: peerNode.getPort(),
+                  originalPeerNodeName: resourceSearchMessage.peerNodeName,
+                  originalPeerNodeAddress:
+                    resourceSearchMessage.peerNodeAddress,
+                  originalPeerNodePort: resourceSearchMessage.peerNodePort,
+                  resourceName: resourceSearchMessage.resourceName,
+                };
+                const superNodeToSend = System.getNextSuperNode(this.order);
+                if (!superNodeToSend) {
+                  return;
+                }
+                try {
+                  await this.sendMessageToNode(
+                    resourceResponseMessage,
+                    superNodeToSend
+                  );
+                } catch (error) {
+                  console.error(
+                    "Error sending resource response message to next super node: ",
+                    error
+                  );
+                  return;
+                }
+              } else {
+              }
             }
           }
           break;
