@@ -271,6 +271,11 @@ export default class SuperNode extends Node {
                   return;
                 }
               } else {
+                console.log(
+                  `Requested resource '${
+                    resourceSearchMessage.resourceName
+                  }' ${YELLOW}does not belong to me${RESET}. Asking to '${nextSuperNode.getName()}'.`
+                );
                 const newResourceSearchMessage: ResourceSearchMessage = {
                   type: "resourceSearch",
                   id: resourceSearchMessage.id,
