@@ -17,12 +17,6 @@
             "address": "172.24.2.102",
             "port": 9000,
             "resources_directory": "books-3"
-        },
-        {
-            "name": "peer-node-jeronimo",
-            "address": "172.24.2.103",
-            "port": 9000,
-            "resources_directory": "books-1"
         }
     ]
 }

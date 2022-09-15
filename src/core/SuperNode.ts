@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import {
   KeepAliveMessage,
   Message,
@@ -5,6 +6,7 @@ import {
   RegisterResponseMessage,
   ResourceRequestMessage,
   ResourceResponseMessage,
+  ResourceSearchMessage,
   ResourceTransferMessage,
 } from "../messages/messages";
 import Node from "./Node";
@@ -33,10 +35,16 @@ export default class SuperNode extends Node {
   */
   private dht = new Map<string, PeerNode>();
 
+  /*
+    List of pending resource requests.
+  */
+  private pendingResourceRequestsIDs: string[];
+
   constructor(name: string, address: string, port: number, order: number) {
     super(name, address, port);
     this.order = order;
     this.peerNodesData = new Map();
+    this.pendingResourceRequestsIDs = [];
   }
 
   public toString(): string {
@@ -121,58 +129,34 @@ export default class SuperNode extends Node {
               decodedMessage as ResourceRequestMessage;
             const resourceNames = resourceRequestMessage.resourceNames;
             for (const resourceName of resourceNames) {
-              const peerNode = this.dht.get(resourceName);
-              if (peerNode) {
-                console.log(
-                  `Requested resource '${resourceName}' ${GREEN}belongs to me${RESET}.`
-                );
-                const resourceResponseMessage: ResourceResponseMessage = {
-                  type: "resourceResponse",
-                  superNodeName: this.getName(),
-                  peerNodeName: peerNode.getName(),
-                  peerNodeAddress: peerNode.getAddress(),
-                  peerNodePort: peerNode.getPort(),
-                  resourceName: resourceName,
-                };
-                const peerNodeToSend = new PeerNode(
-                  resourceRequestMessage.peerNodeName,
-                  remote.address,
-                  resourceRequestMessage.peerNodePort
-                );
-                try {
-                  await this.sendMessageToNode(
-                    resourceResponseMessage,
-                    peerNodeToSend
-                  );
-                } catch (error) {
-                  console.error(
-                    "Error sending resource response message to peer node: ",
-                    error
-                  );
-                  return;
-                }
-              } else {
-                const nextSuperNode = System.getNextSuperNode(this.order);
-                if (!nextSuperNode) {
-                  return;
-                }
-                console.log(
-                  `Requested resource '${resourceName}' ${YELLOW}does not belong to me${RESET}. Forwarding request to '${nextSuperNode.getName()}'.`
-                );
-                // Fix here, can't just forward the message.
-                try {
-                  await this.sendMessageToNode(
-                    resourceRequestMessage,
-                    nextSuperNode
-                  );
-                } catch (error) {
-                  console.error(
-                    "Error forwarding resource request message to next super node: ",
-                    error
-                  );
-                  return;
-                }
-              }
+              this.checkIfResourceBelongsToMe(
+                resourceName,
+                resourceRequestMessage.peerNodeName,
+                remote.address,
+                resourceRequestMessage.peerNodePort
+              );
+            }
+          }
+          break;
+        case "resourceResponse":
+          {
+          }
+          break;
+        case "resourceSearch":
+          {
+            const resourceSearchMessage =
+              decodedMessage as ResourceSearchMessage;
+            if (
+              this.pendingResourceRequestsIDs.includes(resourceSearchMessage.id)
+            ) {
+              // didnt find the resource
+            } else {
+              this.checkIfResourceBelongsToMe(
+                resourceSearchMessage.resourceName,
+                resourceSearchMessage.peerNodeName,
+                remote.address,
+                resourceSearchMessage.peerNodePort
+              );
             }
           }
           break;
@@ -230,6 +214,70 @@ export default class SuperNode extends Node {
           console.error("Error sending resource transfer message: ", error);
           return;
         }
+      }
+    }
+  }
+
+  private async checkIfResourceBelongsToMe(
+    resourceName: string,
+    peerNodeName: string,
+    peerNodeAddress: string,
+    peerNodePort: number
+  ): Promise<void> {
+    const peerNode = this.dht.get(resourceName);
+    if (peerNode) {
+      console.log(
+        `Requested resource '${resourceName}' ${GREEN}belongs to me${RESET}.`
+      );
+      const resourceResponseMessage: ResourceResponseMessage = {
+        type: "resourceResponse",
+        superNodeName: this.getName(),
+        peerNodeName: peerNode.getName(),
+        peerNodeAddress: peerNode.getAddress(),
+        peerNodePort: peerNode.getPort(),
+        resourceName: resourceName,
+      };
+      const peerNodeToSend = new PeerNode(
+        peerNodeName,
+        peerNodeAddress,
+        peerNodePort
+      );
+      try {
+        await this.sendMessageToNode(resourceResponseMessage, peerNodeToSend);
+      } catch (error) {
+        console.error(
+          "Error sending resource response message to peer node: ",
+          error
+        );
+        return;
+      }
+    } else {
+      const nextSuperNode = System.getNextSuperNode(this.order);
+      if (!nextSuperNode) {
+        return;
+      }
+      console.log(
+        `Requested resource '${resourceName}' ${YELLOW}does not belong to me${RESET}. Asking to '${nextSuperNode.getName()}'.`
+      );
+      const uniqueID = crypto.randomUUID();
+      this.pendingResourceRequestsIDs.push(uniqueID);
+      const resourceSearchMessage: ResourceSearchMessage = {
+        type: "resourceSearch",
+        id: uniqueID,
+        superNodeName: this.getName(),
+        peerNodeName: peerNodeName,
+        peerNodeAddress: peerNodeAddress,
+        peerNodePort: peerNodePort,
+        resourceName: resourceName,
+      };
+      try {
+        await this.sendMessageToNode(resourceSearchMessage, nextSuperNode);
+      } catch (error) {
+        console.error(
+          "Error sending resource search message to next super node: ",
+          error
+        );
+        return;
       }
     }
   }

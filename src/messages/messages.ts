@@ -35,12 +35,25 @@ export interface ResourceRequestMessage extends Message {
   peerNodePort: number;
   resourceNames: string[];
 }
-export interface ResourceResponseMessage extends Message {
-  type: "resourceResponse";
+export interface ResourceSearchMessage extends Message {
+  type: "resourceSearch";
+  id: string;
   superNodeName: string;
   peerNodeName: string;
   peerNodeAddress: string;
   peerNodePort: number;
+  resourceName: string;
+}
+export interface ResourceResponseMessage extends Message {
+  type: "resourceResponse";
+  id?: string;
+  superNodeName: string;
+  peerNodeName: string;
+  peerNodeAddress: string;
+  peerNodePort: number;
+  originalPeerNodeName?: string;
+  originalPeerNodeAddress?: string;
+  originalPeerNodePort?: number;
   resourceName: string;
 }
 export interface ResourceMessage extends Message {

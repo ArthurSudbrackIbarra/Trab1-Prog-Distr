@@ -29,13 +29,6 @@ services:
         ipv4_address: 172.24.2.3
     build: .
     entrypoint: npm run as-super-node -- "super-node-willian"
-  super-node-bob:
-    container_name: super-node-bob
-    networks:
-      nodes_network:
-        ipv4_address: 172.24.2.4
-    build: .
-    entrypoint: npm run as-super-node -- "super-node-bob"
   # Peer Nodes.
   peer-node-zeca:
     container_name: peer-node-zeca
@@ -70,14 +63,3 @@ services:
         target: /home/trab-1-prog-distr/build/configurations/requests/peer-node-carlos.json
     build: .
     entrypoint: npm run as-peer-node -- "peer-node-carlos"
-  peer-node-jeronimo:
-    container_name: peer-node-jeronimo
-    networks:
-      nodes_network:
-        ipv4_address: 172.24.2.103
-    volumes:
-      - type: bind
-        source: ./src/configurations/requests/peer-node-jeronimo.json
-        target: /home/trab-1-prog-distr/build/configurations/requests/peer-node-jeronimo.json
-    build: .
-    entrypoint: npm run as-peer-node -- "peer-node-jeronimo"
