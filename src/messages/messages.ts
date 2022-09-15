@@ -51,9 +51,6 @@ export interface ResourceResponseMessage extends Message {
   peerNodeName: string | null;
   peerNodeAddress: string | null;
   peerNodePort: number | null;
-  originalPeerNodeName?: string;
-  originalPeerNodeAddress?: string;
-  originalPeerNodePort?: number;
   resourceName: string;
 }
 export interface ResourceMessage extends Message {

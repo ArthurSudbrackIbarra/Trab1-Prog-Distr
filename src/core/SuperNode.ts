@@ -196,10 +196,75 @@ export default class SuperNode extends Node {
           break;
         case "resourceResponse":
           {
-            // if I have the message id in my pending resource requests, then i am the one who requested the resource
-            // and received the response from the super node that manages the resource.
-            // if I don't have the message id in my pending resource requests, then I should forward the response to the
-            // next super node in the system.
+            const resourceResponseMessage =
+              decodedMessage as ResourceResponseMessage;
+            if (!resourceResponseMessage.id) {
+              return;
+            }
+            const peerNode = this.pendingResourceRequestsData.get(
+              resourceResponseMessage.id
+            );
+            if (peerNode) {
+              console.log(
+                `Resources found for the request with id '${
+                  resourceResponseMessage.id
+                }', replying to my peer node '${peerNode.getName()}'.`
+              );
+              this.pendingResourceRequestsData.delete(
+                resourceResponseMessage.id
+              );
+              const newResourceResponseMessage: ResourceResponseMessage = {
+                type: "resourceResponse",
+                superNodeName: this.getName(),
+                peerNodeName: resourceResponseMessage.peerNodeName,
+                peerNodeAddress: resourceResponseMessage.peerNodeAddress,
+                peerNodePort: resourceResponseMessage.peerNodePort,
+                resourceName: resourceResponseMessage.resourceName,
+              };
+              try {
+                await this.sendMessageToNode(
+                  newResourceResponseMessage,
+                  peerNode
+                );
+              } catch (error) {
+                console.error(
+                  "Error sending resource response message to peer node: ",
+                  error
+                );
+                return;
+              }
+            } else {
+              const nextSuperNode = System.getNextSuperNode(this.order);
+              if (!nextSuperNode) {
+                return;
+              }
+              console.log(
+                `Resources found for the request with id '${
+                  resourceResponseMessage.id
+                }', forwarding to super node '${nextSuperNode.getName()}'.`
+              );
+              const newResourceResponseMessage: ResourceResponseMessage = {
+                type: "resourceResponse",
+                superNodeName: this.getName(),
+                id: resourceResponseMessage.id,
+                peerNodeName: resourceResponseMessage.peerNodeName,
+                peerNodeAddress: resourceResponseMessage.peerNodeAddress,
+                peerNodePort: resourceResponseMessage.peerNodePort,
+                resourceName: resourceResponseMessage.resourceName,
+              };
+              try {
+                await this.sendMessageToNode(
+                  newResourceResponseMessage,
+                  nextSuperNode
+                );
+              } catch (error) {
+                console.error(
+                  "Error sending resource response message to next super node: ",
+                  error
+                );
+                return;
+              }
+            }
           }
           break;
         case "resourceSearch":
@@ -252,10 +317,6 @@ export default class SuperNode extends Node {
                   peerNodeName: peerNode.getName(),
                   peerNodeAddress: peerNode.getAddress(),
                   peerNodePort: peerNode.getPort(),
-                  originalPeerNodeName: resourceSearchMessage.peerNodeName,
-                  originalPeerNodeAddress:
-                    resourceSearchMessage.peerNodeAddress,
-                  originalPeerNodePort: resourceSearchMessage.peerNodePort,
                   resourceName: resourceSearchMessage.resourceName,
                 };
                 try {
