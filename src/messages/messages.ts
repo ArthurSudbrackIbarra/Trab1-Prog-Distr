@@ -48,9 +48,9 @@ export interface ResourceResponseMessage extends Message {
   type: "resourceResponse";
   id?: string;
   superNodeName: string;
-  peerNodeName: string;
-  peerNodeAddress: string;
-  peerNodePort: number;
+  peerNodeName: string | null;
+  peerNodeAddress: string | null;
+  peerNodePort: number | null;
   originalPeerNodeName?: string;
   originalPeerNodeAddress?: string;
   originalPeerNodePort?: number;

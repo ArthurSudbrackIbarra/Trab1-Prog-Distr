@@ -175,6 +175,16 @@ export default class PeerNode extends Node {
         case "resourceResponse": {
           const resourceResponseMessage =
             decodedMessage as ResourceResponseMessage;
+          if (
+            !resourceResponseMessage.peerNodeName ||
+            !resourceResponseMessage.peerNodeAddress ||
+            !resourceResponseMessage.peerNodePort
+          ) {
+            console.error(
+              `Super node '${resourceResponseMessage.superNodeName}' says that the resource '${resourceResponseMessage.resourceName}' I requested ${YELLOW}does not exist${RESET}.`
+            );
+            return;
+          }
           console.log(
             `Received resource response. Super node '${resourceResponseMessage.superNodeName}' pointed to peer node '${resourceResponseMessage.peerNodeName}'.`
           );

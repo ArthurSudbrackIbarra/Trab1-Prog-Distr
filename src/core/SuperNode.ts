@@ -26,7 +26,7 @@ export default class SuperNode extends Node {
   */
   private order: number;
   /*
-    The map of peer nodes connected to this super node (name - object).
+    The map of peer nodes connected to this super node. Key = peer node name, value = peer node object.
   */
   private peerNodesData: Map<string, PeerNodeData>;
 
@@ -36,7 +36,7 @@ export default class SuperNode extends Node {
   private dht = new Map<string, PeerNode>();
 
   /*
-    List of pending resource requests.
+    List of pending resource requests. Key = request ID, value = peer node that requested the resource.
   */
   private pendingResourceRequestsData: Map<string, PeerNode>;
 
@@ -205,7 +205,32 @@ export default class SuperNode extends Node {
             if (
               this.pendingResourceRequestsData.get(resourceSearchMessage.id)
             ) {
-              // didnt find the resource i asked for
+              const resourceResponseMessage: ResourceResponseMessage = {
+                type: "resourceResponse",
+                superNodeName: this.getName(),
+                peerNodeName: null,
+                peerNodeAddress: null,
+                peerNodePort: null,
+                resourceName: resourceSearchMessage.resourceName,
+              };
+              const peerNodeToSend = this.pendingResourceRequestsData.get(
+                resourceSearchMessage.id
+              );
+              if (!peerNodeToSend) {
+                return;
+              }
+              try {
+                await this.sendMessageToNode(
+                  resourceResponseMessage,
+                  peerNodeToSend
+                );
+              } catch (error) {
+                console.error(
+                  "Error sending resource response message to peer node: ",
+                  error
+                );
+                return;
+              }
             } else {
               // check if i have the resource
             }
