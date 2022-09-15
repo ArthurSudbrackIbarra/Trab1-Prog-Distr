@@ -152,10 +152,26 @@ export default class SuperNode extends Node {
                   return;
                 }
               } else {
+                const nextSuperNode = System.getNextSuperNode(this.order);
+                if (!nextSuperNode) {
+                  return;
+                }
                 console.log(
-                  `Requested resource '${resourceName}' ${YELLOW}does not belong to me${RESET}.`
+                  `Requested resource '${resourceName}' ${YELLOW}does not belong to me${RESET}. Forwarding request to '${nextSuperNode.getName()}'.`
                 );
-                // Ask other supernodes if they have the resource.
+                // Fix here, can't just forward the message.
+                try {
+                  await this.sendMessageToNode(
+                    resourceRequestMessage,
+                    nextSuperNode
+                  );
+                } catch (error) {
+                  console.error(
+                    "Error forwarding resource request message to next super node: ",
+                    error
+                  );
+                  return;
+                }
               }
             }
           }
