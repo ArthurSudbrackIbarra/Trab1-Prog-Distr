@@ -203,7 +203,7 @@ export default class SuperNode extends Node {
             );
             if (peerNode) {
               console.log(
-                `Resources found for the request with id '${
+                `Resources found for my request with id '${
                   resourceResponseMessage.id
                 }', replying to my peer node '${peerNode.getName()}'.`
               );

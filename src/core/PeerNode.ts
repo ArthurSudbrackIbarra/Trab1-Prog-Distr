@@ -124,9 +124,6 @@ export default class PeerNode extends Node {
               console.error(
                 `Error registering to super node ${registerResponseMessage.superNodeName}.`
               );
-              /*
-                Trying again.
-              */
               this.start();
             }
           }
