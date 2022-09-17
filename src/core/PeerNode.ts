@@ -12,7 +12,7 @@ import Node from "./Node";
 import SuperNode from "./SuperNode";
 import System from "./System";
 import { wait } from "../utils/time";
-import { RED, RESET, YELLOW } from "../utils/colors";
+import { BLUE, RED, RESET, YELLOW } from "../utils/colors";
 import path from "path";
 import { Resource, ResourceRequest } from "../resources/resources";
 import { createHash } from "crypto";
@@ -209,7 +209,7 @@ export default class PeerNode extends Node {
           {
             const resourceMessage = decodedMessage as ResourceMessage;
             console.log(
-              `I got the resource '${resourceMessage.content}' from the peer node '${resourceMessage.peerNodeName}'.`
+              `[${BLUE}RESOURCE RECEIVED${RESET}] I got the resource '${resourceMessage.content}' from the peer node '${resourceMessage.peerNodeName}'.`
             );
           }
           break;

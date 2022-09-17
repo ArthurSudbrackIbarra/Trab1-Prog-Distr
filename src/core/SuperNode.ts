@@ -137,7 +137,7 @@ export default class SuperNode extends Node {
               const peerNode = this.dht.get(resourceName);
               if (peerNode) {
                 console.log(
-                  `Requested resource '${resourceName}' ${GREEN}belongs to me${RESET}.`
+                  `Requested resource '${resourceName}' ${GREEN}belongs to my hash range${RESET}. Replying directly to peer node '${peerNodeToSend.getName()}'.`
                 );
                 const resourceResponseMessage: ResourceResponseMessage = {
                   type: "resourceResponse",
@@ -165,7 +165,7 @@ export default class SuperNode extends Node {
                   return;
                 }
                 console.log(
-                  `Requested resource '${resourceName}' ${YELLOW}does not belong to me${RESET}. Asking to '${nextSuperNode.getName()}'.`
+                  `Requested resource '${resourceName}' ${YELLOW}does not belong to my hash range${RESET}. Asking to '${nextSuperNode.getName()}'.`
                 );
                 const uniqueID = crypto.randomUUID();
                 this.pendingResourceRequestsData.set(uniqueID, peerNodeToSend);
@@ -203,7 +203,7 @@ export default class SuperNode extends Node {
             );
             if (peerNode) {
               console.log(
-                `Resources found for my request with id '${
+                `Resource data found for my request with id '${
                   resourceResponseMessage.id
                 }', replying to my peer node '${peerNode.getName()}'.`
               );
@@ -236,9 +236,9 @@ export default class SuperNode extends Node {
                 return;
               }
               console.log(
-                `Resources found for the request with id '${
+                `Resource data found for request with id '${
                   resourceResponseMessage.id
-                }', forwarding to super node '${nextSuperNode.getName()}'.`
+                }', forwarding to the next super node '${nextSuperNode.getName()}'.`
               );
               const newResourceResponseMessage: ResourceResponseMessage = {
                 type: "resourceResponse",
@@ -309,7 +309,9 @@ export default class SuperNode extends Node {
               const peerNode = this.dht.get(resourceSearchMessage.resourceName);
               if (peerNode) {
                 console.log(
-                  `Requested resource '${resourceSearchMessage.resourceName}' ${GREEN}belongs to me${RESET}.`
+                  `Requested resource '${
+                    resourceSearchMessage.resourceName
+                  }' ${GREEN}belongs to my hash range${RESET}. Sending data to the next super node '${nextSuperNode.getName()}'...`
                 );
                 const resourceResponseMessage: ResourceResponseMessage = {
                   type: "resourceResponse",
@@ -336,7 +338,7 @@ export default class SuperNode extends Node {
                 console.log(
                   `Requested resource '${
                     resourceSearchMessage.resourceName
-                  }' ${YELLOW}does not belong to me${RESET}. Asking to '${nextSuperNode.getName()}'.`
+                  }' ${YELLOW}does not belong to my hash range${RESET}. Asking to '${nextSuperNode.getName()}'.`
                 );
                 const newResourceSearchMessage: ResourceSearchMessage = {
                   type: "resourceSearch",
@@ -383,9 +385,9 @@ export default class SuperNode extends Node {
     peerNode: PeerNode
   ): Promise<void> {
     for (const resource of resources) {
-      const contentHashAsNumber = parseInt(resource.contentHash, 16);
-      const partitionsNumber = System.getPartitionsNumber();
-      const partition = contentHashAsNumber % partitionsNumber;
+      const hashFirst16Bytes = resource.contentHash.slice(0, 16);
+      const hashFirst16BytesNumber = parseInt(hashFirst16Bytes, 16);
+      const partition = hashFirst16BytesNumber % System.getPartitionsNumber();
       if (partition === this.order) {
         console.log(
           `Resource '${resource.fileName}' ${GREEN}belongs to my hash range${RESET}.`

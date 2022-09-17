@@ -1,0 +1,2 @@
+The C language is very fast but at the same time it
+is kinda evil, some would say.
