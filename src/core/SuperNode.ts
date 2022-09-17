@@ -385,9 +385,12 @@ export default class SuperNode extends Node {
     peerNode: PeerNode
   ): Promise<void> {
     for (const resource of resources) {
-      const hashFirst16Bytes = resource.contentHash.slice(0, 16);
-      const hashFirst16BytesNumber = parseInt(hashFirst16Bytes, 16);
-      const partition = hashFirst16BytesNumber % System.getPartitionsNumber();
+      const hashLast16Bits = resource.contentHash.slice(-16);
+      const hashLast16BytesNumber = parseInt(hashLast16Bits, 16);
+      const partition = hashLast16BytesNumber % System.getPartitionsNumber();
+      console.log(
+        `${RED}Resource: ${resource.fileName}, My order: ${this.order}, Partition: ${partition}${RESET}`
+      );
       if (partition === this.order) {
         console.log(
           `Resource '${resource.fileName}' ${GREEN}belongs to my hash range${RESET}.`
