@@ -14,6 +14,11 @@
             "name": "super-node-willian",
             "address": "172.24.2.3",
             "port": 8000
+        },
+        {
+            "name": "super-node-sergio",
+            "address": "172.24.2.4",
+            "port": 8000
         }
     ]
 }
