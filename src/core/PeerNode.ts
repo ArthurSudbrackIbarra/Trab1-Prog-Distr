@@ -12,7 +12,7 @@ import Node from "./Node";
 import SuperNode from "./SuperNode";
 import System from "./System";
 import { wait } from "../utils/time";
-import { BLUE, RED, RESET, YELLOW } from "../utils/colors";
+import { BLUE, GREEN, RED, RESET, WHITE_B, YELLOW } from "../utils/colors";
 import path from "path";
 import { Resource, ResourceRequest } from "../interfaces/resources";
 import { createHash } from "crypto";
@@ -58,7 +58,9 @@ export default class PeerNode extends Node {
         await wait(5000);
       }
     }
-    console.log(`Trying to register to super node '${superNode.getName()}'.`);
+    console.log(
+      `Trying to register to super node ${WHITE_B}${superNode.getName()}${RESET}.`
+    );
     this.startListening();
     this.checkNoSuperNodeRoutine();
   }
@@ -102,7 +104,7 @@ export default class PeerNode extends Node {
   private startListening(): void {
     this.getSocket().on("message", async (message, remote) => {
       console.log(
-        `Received message '${message}' from ${remote.address}:${remote.port}`
+        `Received message ${message} from ${remote.address}:${remote.port}`
       );
       const decodedMessage = JSON.parse(message.toString()) as Message;
       switch (decodedMessage.type) {
@@ -112,7 +114,7 @@ export default class PeerNode extends Node {
               decodedMessage as RegisterResponseMessage;
             if (registerResponseMessage.status === "success") {
               console.log(
-                `Successfully registered to super node '${registerResponseMessage.superNodeName}'.`
+                `${GREEN}Successfully${RESET} registered to super node ${WHITE_B}${registerResponseMessage.superNodeName}${RESET}.`
               );
               this.superNode =
                 System.getSuperNodeByName(
@@ -145,7 +147,7 @@ export default class PeerNode extends Node {
             );
             if (!fs.existsSync(resourcePath)) {
               console.log(
-                `Resource '${resourceName}' ${RED}does not exist${RESET}.`
+                `Resource ${resourceName} ${RED}does not exist${RESET}.`
               );
               return;
             }
@@ -178,12 +180,12 @@ export default class PeerNode extends Node {
             !resourceResponseMessage.peerNodePort
           ) {
             console.error(
-              `Super node '${resourceResponseMessage.superNodeName}' says that the resource '${resourceResponseMessage.resourceName}' I requested ${YELLOW}does not exist${RESET}.`
+              `Super node ${WHITE_B}${resourceResponseMessage.superNodeName}${RESET} says that the resource ${resourceResponseMessage.resourceName} I requested ${RED}does not exist${RESET}.`
             );
             return;
           }
           console.log(
-            `Received resource response. Super node '${resourceResponseMessage.superNodeName}' pointed to peer node '${resourceResponseMessage.peerNodeName}'.`
+            `Received resource response. Super node ${WHITE_B}${resourceResponseMessage.superNodeName}${RESET} pointed to peer node ${WHITE_B}${resourceResponseMessage.peerNodeName}${RESET}.`
           );
           const ownerPeerNode = new PeerNode(
             resourceResponseMessage.peerNodeName,
@@ -200,7 +202,7 @@ export default class PeerNode extends Node {
             await this.sendMessageToNode(resourceRequestMessage, ownerPeerNode);
           } catch (error) {
             console.error(
-              `Error sending resource request message to peer node '${ownerPeerNode.getName()}'.`
+              `Error sending resource request message to peer node ${ownerPeerNode.getName()}.`
             );
           }
           break;
@@ -209,7 +211,7 @@ export default class PeerNode extends Node {
           {
             const resourceMessage = decodedMessage as ResourceMessage;
             console.log(
-              `[${BLUE}RESOURCE RECEIVED${RESET}] I got the resource '${resourceMessage.content}' from the peer node '${resourceMessage.peerNodeName}'.`
+              `${GREEN}I Got the content${RESET} ${resourceMessage.content} from the peer node ${WHITE_B}${resourceMessage.peerNodeName}${RESET}.`
             );
           }
           break;
@@ -244,9 +246,7 @@ export default class PeerNode extends Node {
         `../configurations/requests/${this.getName()}.json`
       );
       if (!fs.existsSync(filePath)) {
-        console.log(
-          `Requests file '${filePath}' ${RED}does not${RESET} exist.`
-        );
+        console.log(`Requests file ${filePath} ${RED}does not${RESET} exist.`);
         return;
       }
       const fileContent = fs.readFileSync(filePath).toString();
@@ -261,7 +261,9 @@ export default class PeerNode extends Node {
       ) {
         return;
       } else {
-        console.log(`${YELLOW}Detected changes on file ${filePath}.${RESET}`);
+        console.log(
+          `${BLUE}Detected changes on file ${filePath}. Asking for resources...${RESET}`
+        );
         this.resourceRequest = resourceRequests;
         const resourceRequestMessage: ResourceRequestMessage = {
           type: "resourceRequest",
@@ -285,7 +287,7 @@ export default class PeerNode extends Node {
     );
     if (!fs.existsSync(resourcesPath)) {
       throw new Error(
-        `Resources directory '${resourcesPath}' ${RED}does not exist${RESET}.`
+        `Resources directory ${resourcesPath} ${RED}does not exist${RESET}.`
       );
     }
     const resources: Resource[] = [];

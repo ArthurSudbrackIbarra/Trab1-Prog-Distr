@@ -12,7 +12,7 @@ import {
 } from "../interfaces/messages";
 import Node from "./Node";
 import PeerNode from "./PeerNode";
-import { GREEN, RED, RESET, YELLOW } from "../utils/colors";
+import { GREEN, RED, RESET, WHITE_B, YELLOW } from "../utils/colors";
 import System from "./System";
 import { Resource } from "../interfaces/resources";
 
@@ -82,7 +82,7 @@ export default class SuperNode extends Node {
         return;
       }
       console.log(
-        `Received message '${message}' from ${remote.address}:${remote.port}`
+        `Received message ${message} from ${remote.address}:${remote.port}`
       );
       switch (decodedMessage.type) {
         case "register":
@@ -112,7 +112,7 @@ export default class SuperNode extends Node {
               lastKeepAliveTime: Date.now(),
             });
             console.log(
-              `Added '${peerNode.getName()} - ${peerNode.getAddress()}:${peerNode.getPort()}' to the list of peer nodes.`
+              `Added ${WHITE_B}${peerNode.getName()} - ${peerNode.getAddress()}:${peerNode.getPort()}${RESET} to the list of peer nodes.`
             );
             this.handleResources(registerMessage.resources, peerNode);
           }
@@ -154,7 +154,7 @@ export default class SuperNode extends Node {
               const peerNode = this.dht.get(resourceName);
               if (peerNode) {
                 console.log(
-                  `Requested resource '${resourceName}' ${GREEN}belongs to my hash range${RESET}. Replying directly to peer node '${peerNodeToSend.getName()}'.`
+                  `Requested resource ${WHITE_B}${resourceName}${RESET} belongs to my hash range. Replying directly to peer node ${WHITE_B}${peerNodeToSend.getName()}${RESET}.`
                 );
                 const resourceResponseMessage: ResourceResponseMessage = {
                   type: "resourceResponse",
@@ -182,7 +182,7 @@ export default class SuperNode extends Node {
                   return;
                 }
                 console.log(
-                  `Requested resource '${resourceName}' ${YELLOW}does not belong to my hash range${RESET}. Asking to '${nextSuperNode.getName()}'.`
+                  `Requested resource ${WHITE_B}${resourceName}${RESET} does *NOT* belong to my hash range. Asking to ${WHITE_B}${nextSuperNode.getName()}${RESET}.`
                 );
                 const uniqueID = crypto.randomUUID();
                 this.pendingResourceRequestsData.set(uniqueID, peerNodeToSend);
@@ -220,9 +220,9 @@ export default class SuperNode extends Node {
             );
             if (peerNode) {
               console.log(
-                `Resource data found for my request with id '${
+                `Resource data found for my request with id ${WHITE_B}${
                   resourceResponseMessage.id
-                }', replying to my peer node '${peerNode.getName()}'.`
+                }${RESET}, replying to my peer node ${WHITE_B}${peerNode.getName()}${RESET}.`
               );
               this.pendingResourceRequestsData.delete(
                 resourceResponseMessage.id
@@ -253,9 +253,9 @@ export default class SuperNode extends Node {
                 return;
               }
               console.log(
-                `Resource data found for request with id '${
+                `Resource data found for the request with id ${WHITE_B}${
                   resourceResponseMessage.id
-                }', forwarding to the next super node '${nextSuperNode.getName()}'.`
+                }${RESET}, forwarding to the next super node ${WHITE_B}${nextSuperNode.getName()}${RESET}.`
               );
               const newResourceResponseMessage: ResourceResponseMessage = {
                 type: "resourceResponse",
@@ -289,7 +289,7 @@ export default class SuperNode extends Node {
               this.pendingResourceRequestsData.get(resourceSearchMessage.id)
             ) {
               console.log(
-                `My resource request with id '${resourceSearchMessage.id}' ${YELLOW}completed a cycle in the ring and was not found${RESET}. Telling my peer node...`
+                `My resource request with id ${WHITE_B}${resourceSearchMessage.id}${RESET} ${YELLOW}completed a cycle in the ring and was not found${RESET}. Telling my peer node...`
               );
               const resourceResponseMessage: ResourceResponseMessage = {
                 type: "resourceResponse",
@@ -326,9 +326,9 @@ export default class SuperNode extends Node {
               const peerNode = this.dht.get(resourceSearchMessage.resourceName);
               if (peerNode) {
                 console.log(
-                  `Requested resource '${
+                  `Requested resource ${WHITE_B}${
                     resourceSearchMessage.resourceName
-                  }' ${GREEN}belongs to my hash range${RESET}. Sending data to the next super node '${nextSuperNode.getName()}'...`
+                  }${RESET} belongs to my hash range. Sending data to the next super node ${WHITE_B}${nextSuperNode.getName()}${RESET}.`
                 );
                 const resourceResponseMessage: ResourceResponseMessage = {
                   type: "resourceResponse",
@@ -353,9 +353,9 @@ export default class SuperNode extends Node {
                 }
               } else {
                 console.log(
-                  `Requested resource '${
+                  `Requested resource ${WHITE_B}${
                     resourceSearchMessage.resourceName
-                  }' ${YELLOW}does not belong to my hash range${RESET}. Asking to '${nextSuperNode.getName()}'.`
+                  }${RESET} does *NOT* belong to my hash range. Asking to super node ${WHITE_B}${nextSuperNode.getName()}${RESET}.`
                 );
                 const newResourceSearchMessage: ResourceSearchMessage = {
                   type: "resourceSearch",
@@ -389,7 +389,7 @@ export default class SuperNode extends Node {
       this.peerNodesData.forEach((peerNodeData, nodeName) => {
         if (currentTime - peerNodeData.lastKeepAliveTime > 10000) {
           console.log(
-            `Peer node '${nodeName}' has ${RED}disconnected${RESET} and will be removed.`
+            `Peer node ${WHITE_B}${nodeName}${RESET} has ${RED}disconnected${RESET} and will be removed.`
           );
           this.peerNodesData.delete(nodeName);
         }
@@ -407,12 +407,12 @@ export default class SuperNode extends Node {
       const partition = hashLast16BytesNumber % System.getPartitionsNumber();
       if (partition === this.order) {
         console.log(
-          `Resource '${resource.fileName}' ${GREEN}belongs to my hash range${RESET}.`
+          `Resource ${WHITE_B}${resource.fileName}${RESET} belongs to my hash range, registering data.`
         );
         this.dht.set(resource.fileName, peerNode);
       } else {
         console.log(
-          `Resource '${resource.fileName}' ${YELLOW}does not belong to my hash range${RESET}.`
+          `Resource ${WHITE_B}${resource.fileName}${RESET} does *NOT* belong to my hash range, transfering...`
         );
         const resourceTransferMessage: ResourceTransferMessage = {
           type: "resourceTransfer",
@@ -451,7 +451,7 @@ export default class SuperNode extends Node {
           console.error("Error sending ready message: ", error);
         }
       }
-    }, 5000);
+    }, 3000);
   }
 
   private areAllSuperNodesReady(): boolean {
