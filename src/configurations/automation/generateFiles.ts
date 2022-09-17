@@ -1,5 +1,5 @@
 import fs from "fs";
-import { BLUE, GREEN, RESET, YELLOW } from "../../utils/colors";
+import { BLUE, GREEN, RESET, YELLOW_BLINK } from "../../utils/colors";
 import superNodesConfiguration from "../nodes/super-nodes.json";
 import peerNodesConfiguration from "../nodes/peer-nodes.json";
 
@@ -87,7 +87,7 @@ for (const node of peerNodesConfiguration.nodes) {
 }
 
 console.log(
-  `\n${YELLOW}=> ${RESET}Por favor, antes de continuar, leia o README do projeto com as instruções de como operar o sistema.\n`
+  `\n${YELLOW_BLINK}=> ${RESET}Por favor, antes de continuar, leia o README do projeto com as instruções de como operar o sistema.\n`
 );
 console.log("Pressione qualquer tecla para continuar...\n");
 process.stdin.setRawMode(true);

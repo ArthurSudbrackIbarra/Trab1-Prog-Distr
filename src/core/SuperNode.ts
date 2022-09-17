@@ -12,7 +12,7 @@ import {
 } from "../interfaces/messages";
 import Node from "./Node";
 import PeerNode from "./PeerNode";
-import { GREEN, RED, RESET, WHITE_B, YELLOW } from "../utils/colors";
+import { RED, RESET, WHITE_B, YELLOW } from "../utils/colors";
 import System from "./System";
 import { Resource } from "../interfaces/resources";
 
@@ -289,7 +289,7 @@ export default class SuperNode extends Node {
               this.pendingResourceRequestsData.get(resourceSearchMessage.id)
             ) {
               console.log(
-                `My resource request with id ${WHITE_B}${resourceSearchMessage.id}${RESET} ${YELLOW}completed a cycle in the ring and was not found${RESET}. Telling my peer node...`
+                `My resource request with id ${WHITE_B}${resourceSearchMessage.id}${RESET} ${RED}completed a cycle in the ring and was not found${RESET}. Telling my peer node...`
               );
               const resourceResponseMessage: ResourceResponseMessage = {
                 type: "resourceResponse",

@@ -180,7 +180,7 @@ export default class PeerNode extends Node {
             !resourceResponseMessage.peerNodePort
           ) {
             console.error(
-              `Super node ${WHITE_B}${resourceResponseMessage.superNodeName}${RESET} says that the resource ${resourceResponseMessage.resourceName} I requested ${RED}does not exist${RESET}.`
+              `Super node ${WHITE_B}${resourceResponseMessage.superNodeName}${RESET} says that the resource ${WHITE_B}${resourceResponseMessage.resourceName}${RESET} I requested ${RED}does not exist${RESET}.`
             );
             return;
           }
@@ -211,7 +211,7 @@ export default class PeerNode extends Node {
           {
             const resourceMessage = decodedMessage as ResourceMessage;
             console.log(
-              `${GREEN}I Got the content${RESET} ${resourceMessage.content} from the peer node ${WHITE_B}${resourceMessage.peerNodeName}${RESET}.`
+              `${GREEN}Received content${RESET} '${resourceMessage.content}' from the peer node ${WHITE_B}${resourceMessage.peerNodeName}${RESET}.`
             );
           }
           break;

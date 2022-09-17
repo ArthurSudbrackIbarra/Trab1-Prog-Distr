@@ -38,8 +38,20 @@ O comando 'npm start' irá:
 
 - **Nodos Peer**: Altere o arquivo `src/configurations/nodes/peer-nodes.json`.
 
+**OBS**: Use endereços de IPs entre `172.24.2.1` e `172.24.2.254`.
+
 ## Solicitando Recursos
 
 Para que não fosse necessário input do usuário via terminal na aplicação que será rodada dentro dos contâineres, o grupo optou por uma abordagem em que os pedidos de recursos dos nodos peers são feitos através de arquivos compartilhados entre os contâineres e a máquina host. Para isso, foram utilizados volumes do tipo 'bind' na definição do docker-compose.yaml.
 
-Conforme dito anteriormente, quando o comando 'npm start' é executado, um arquivo JSON é criado para cada nodo peer definido em sua configuração. Sendo assim, para solicitar recursos, altere esses arquivos com os pedidos de recursos que desejar em `src/configurations/requests`. A aplicação detectará mudanças nesses arquivos e irá tomar as ações necessárias.
+Conforme dito anteriormente, quando o comando 'npm start' é executado, um arquivo JSON é criado para cada nodo peer definido em sua configuração. Sendo assim, para solicitar recursos, altere esses arquivos com os pedidos de recursos que desejar em `src/configurations/requests`. A aplicação detectará mudanças nesses arquivos e irá tomar as ações necessárias. Exemplo:
+
+**Arquivo:** peer-node-carlos.json
+
+```json
+{
+  "resourceNames": ["batman.txt", "the-c-language.txt"]
+}
+```
+
+No exemplo acima, estamos fazendo com que o nodo peer 'Carlos' solicite ao seu super nodo os recursos 'batman.txt' e 'the-c-language.txt'.
