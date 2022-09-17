@@ -13,6 +13,16 @@ export default class System {
   public static getRandomSuperNode(): SuperNode | undefined {
     return this.superNodes[Math.floor(Math.random() * this.superNodes.length)];
   }
+  public static getAllSuperNodes(): SuperNode[] {
+    return this.superNodes.map((superNode) => {
+      return new SuperNode(
+        superNode.getName(),
+        superNode.getAddress(),
+        superNode.getPort(),
+        superNode.getOrder()
+      );
+    });
+  }
   public static getNextSuperNode(order: number): SuperNode | undefined {
     const nextOrder = (order + 1) % this.superNodes.length;
     return this.superNodes.find(

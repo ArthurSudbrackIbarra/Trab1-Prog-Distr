@@ -7,14 +7,14 @@ import {
   ResourceMessage,
   ResourceRequestMessage,
   ResourceResponseMessage,
-} from "../messages/messages";
+} from "../interfaces/messages";
 import Node from "./Node";
 import SuperNode from "./SuperNode";
 import System from "./System";
 import { wait } from "../utils/time";
 import { BLUE, RED, RESET, YELLOW } from "../utils/colors";
 import path from "path";
-import { Resource, ResourceRequest } from "../resources/resources";
+import { Resource, ResourceRequest } from "../interfaces/resources";
 import { createHash } from "crypto";
 
 export default class PeerNode extends Node {

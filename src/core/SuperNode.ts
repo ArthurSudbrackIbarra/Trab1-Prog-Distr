@@ -8,14 +8,15 @@ import {
   ResourceResponseMessage,
   ResourceSearchMessage,
   ResourceTransferMessage,
-} from "../messages/messages";
+  SuperNodeReadyMessage,
+} from "../interfaces/messages";
 import Node from "./Node";
 import PeerNode from "./PeerNode";
 import { GREEN, RED, RESET, YELLOW } from "../utils/colors";
 import System from "./System";
-import { Resource } from "../resources/resources";
+import { Resource } from "../interfaces/resources";
 
-interface PeerNodeData {
+interface PeerNodeKeepAliveData {
   peerNode: PeerNode;
   lastKeepAliveTime: number;
 }
@@ -26,15 +27,17 @@ export default class SuperNode extends Node {
   */
   private order: number;
   /*
+    Map to keep track of which super nodes are ready to receive messages Key = super node name, value = boolean.
+  */
+  private readySuperNodes: Map<string, boolean>;
+  /*
     The map of peer nodes connected to this super node. Key = peer node name, value = peer node object.
   */
-  private peerNodesData: Map<string, PeerNodeData>;
-
+  private peerNodesData: Map<string, PeerNodeKeepAliveData>;
   /*
     Resources mapping (DHT). Key = resource name, value = peer node that has the resource.
   */
-  private dht = new Map<string, PeerNode>();
-
+  private dht: Map<string, PeerNode>;
   /*
     List of pending resource requests. Key = request ID, value = peer node that requested the resource.
   */
@@ -43,7 +46,9 @@ export default class SuperNode extends Node {
   constructor(name: string, address: string, port: number, order: number) {
     super(name, address, port);
     this.order = order;
+    this.readySuperNodes = new Map();
     this.peerNodesData = new Map();
+    this.dht = new Map();
     this.pendingResourceRequestsData = new Map();
   }
 
@@ -58,15 +63,27 @@ export default class SuperNode extends Node {
 
   public async start(): Promise<void> {
     this.startListening();
+    this.sendReadyMessagesRoutine();
     this.checkDeadPeerNodesRoutine();
   }
 
   private startListening(): void {
     this.getSocket().on("message", async (message, remote) => {
+      const decodedMessage = JSON.parse(message.toString()) as Message;
+      if (decodedMessage.type === "superNodeReady") {
+        const superNodeReadyMessage = decodedMessage as SuperNodeReadyMessage;
+        this.readySuperNodes.set(superNodeReadyMessage.superNodeName, true);
+        return;
+      }
+      if (!this.areAllSuperNodesReady()) {
+        console.log(
+          `${YELLOW}Waiting for all super nodes to be ready before processing messages.${RESET}`
+        );
+        return;
+      }
       console.log(
         `Received message '${message}' from ${remote.address}:${remote.port}`
       );
-      const decodedMessage = JSON.parse(message.toString()) as Message;
       switch (decodedMessage.type) {
         case "register":
           {
@@ -388,9 +405,6 @@ export default class SuperNode extends Node {
       const hashLast16Bits = resource.contentHash.slice(-16);
       const hashLast16BytesNumber = parseInt(hashLast16Bits, 16);
       const partition = hashLast16BytesNumber % System.getPartitionsNumber();
-      console.log(
-        `${RED}Resource: ${resource.fileName}, My order: ${this.order}, Partition: ${partition}${RESET}`
-      );
       if (partition === this.order) {
         console.log(
           `Resource '${resource.fileName}' ${GREEN}belongs to my hash range${RESET}.`
@@ -421,5 +435,35 @@ export default class SuperNode extends Node {
         }
       }
     }
+  }
+
+  private sendReadyMessagesRoutine(): void {
+    const readyMessage: SuperNodeReadyMessage = {
+      type: "superNodeReady",
+      superNodeName: this.getName(),
+    };
+    const allSuperNodes = System.getAllSuperNodes();
+    setInterval(async () => {
+      for (const superNode of allSuperNodes) {
+        try {
+          await this.sendMessageToNode(readyMessage, superNode, false);
+        } catch (error) {
+          console.error("Error sending ready message: ", error);
+        }
+      }
+    }, 5000);
+  }
+
+  private areAllSuperNodesReady(): boolean {
+    const superNodesAmount = System.getPartitionsNumber();
+    let readySuperNodesCount = 0;
+    this.readySuperNodes.forEach((isReady, _) => {
+      if (isReady) {
+        readySuperNodesCount++;
+      } else {
+        return false.valueOf;
+      }
+    });
+    return readySuperNodesCount === superNodesAmount;
   }
 }

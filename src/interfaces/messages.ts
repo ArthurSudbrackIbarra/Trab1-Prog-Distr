@@ -1,9 +1,12 @@
-import { Resource } from "../resources/resources";
+import { Resource } from "./resources";
 
 export interface Message {
   type: string;
 }
-
+export interface SuperNodeReadyMessage extends Message {
+  type: "superNodeReady";
+  superNodeName: string;
+}
 export interface RegisterMessage extends Message {
   type: "register";
   peerNodeName: string;
@@ -15,12 +18,10 @@ export interface RegisterResponseMessage extends Message {
   superNodeName: string;
   status: "success" | "failure";
 }
-
 export interface KeepAliveMessage extends Message {
   type: "keepAlive";
   peerNodeName: string;
 }
-
 export interface ResourceTransferMessage extends Message {
   type: "resourceTransfer";
   superNodeName: string;
