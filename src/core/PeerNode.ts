@@ -250,7 +250,13 @@ export default class PeerNode extends Node {
         return;
       }
       const fileContent = fs.readFileSync(filePath).toString();
-      const resourceRequests = JSON.parse(fileContent) as ResourceRequest;
+      let resourceRequests: ResourceRequest;
+      try {
+        resourceRequests = JSON.parse(fileContent) as ResourceRequest;
+      } catch (error) {
+        console.error(`${RED}Error parsing requests file ${filePath}${RESET}`);
+        return;
+      }
       if (!this.resourceRequest) {
         this.resourceRequest = resourceRequests;
         return;
