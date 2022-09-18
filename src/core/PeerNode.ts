@@ -101,11 +101,17 @@ export default class PeerNode extends Node {
     }, 10000);
   }
 
+  private lastMessageReceived = "";
   private startListening(): void {
     this.getSocket().on("message", async (message, remote) => {
+      // This is to prevent the same message of being processed twice. (Interface socket bug).
+      if (this.lastMessageReceived === message.toString()) {
+        return;
+      }
       console.log(
         `Received message ${message} from ${remote.address}:${remote.port}`
       );
+      this.lastMessageReceived = message.toString();
       const decodedMessage = JSON.parse(message.toString()) as Message;
       switch (decodedMessage.type) {
         case "registerResponse":
