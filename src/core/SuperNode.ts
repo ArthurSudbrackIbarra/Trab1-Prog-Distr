@@ -402,10 +402,12 @@ export default class SuperNode extends Node {
     peerNode: PeerNode
   ): Promise<void> {
     for (const resource of resources) {
-      const hashLast16Bits = resource.contentHash.slice(-16);
-      const hashLast16BytesNumber = parseInt(hashLast16Bits, 16);
-      const partition = hashLast16BytesNumber % System.getPartitionsNumber();
-      if (partition === this.order) {
+      const isInMyHashRange = this.isInMyHashRange(
+        resource.contentHash,
+        this.order,
+        System.getPartitionsNumber()
+      );
+      if (isInMyHashRange) {
         console.log(
           `Resource ${WHITE_B}${resource.fileName}${RESET} belongs to my hash range, registering data.`
         );
@@ -435,6 +437,16 @@ export default class SuperNode extends Node {
         }
       }
     }
+  }
+
+  private isInMyHashRange(
+    hash: string,
+    myPartition: number,
+    numberOfPartitions: number
+  ): boolean {
+    const hashLast6Digits = parseInt(hash.slice(-6), 16);
+    const remainer = hashLast6Digits % numberOfPartitions;
+    return remainer === myPartition;
   }
 
   private sendReadyMessagesRoutine(): void {
