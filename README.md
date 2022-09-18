@@ -2,6 +2,8 @@
 
 Trabalho 1 de Progração Distribuída.
 
+**Nomes**: Arthur Sudbrack Ibarra, Luiz Eduardo Mello dos Reis, Willian Magnum Albeche.
+
 ## Como Rodar
 
 1. Baixe o [Node.js](https://nodejs.org/en/download/), é recomendado que se utilize versões ^16.15.1.
